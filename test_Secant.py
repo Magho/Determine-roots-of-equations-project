@@ -12,3 +12,5 @@ call_func = Secant_method.Secant(function_formula, 1.0, 0.0, 0, 0)
 
 root = call_func.compute_root()
 print(root)
+
+call_func.plot_function()

@@ -14,3 +14,5 @@ print(num_of_iterations)
 
 root = call_func.compute_root()
 print(root)
+
+call_func.plot_function()

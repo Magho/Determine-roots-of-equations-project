@@ -1,5 +1,8 @@
 from sympy import *
 import math
+import matplotlib.pyplot as plt
+
+
 # import pandas as pd
 
 
@@ -76,3 +79,18 @@ class BracketingMethod:
             # stop if precision reached presented by max iteration
             i = i + 1
         return xr
+
+    def plot_function(self):
+
+        a = []
+        b = []
+
+        for x in range(-50, 50, 1):
+            y = self.function_formula.subs(self.X, x)
+            a.append(x)
+            b.append(y)
+
+        fig = plt.figure()
+        axes = fig.add_subplot(111)
+        axes.plot(a, b)
+        plt.show()

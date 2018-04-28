@@ -1,5 +1,7 @@
 from sympy import *
 import math
+import matplotlib.pyplot as plt
+
 # import pandas as pd
 
 
@@ -71,3 +73,18 @@ class FalsePosition:
             xr_1_old = xr_new
 
         return xr_new
+
+    def plot_function(self):
+
+        a = []
+        b = []
+
+        for x in range(-50, 50, 1):
+            y = self.function_formula.subs(self.X, x)
+            a.append(x)
+            b.append(y)
+
+        fig = plt.figure()
+        axes = fig.add_subplot(111)
+        axes.plot(a, b)
+        plt.show()

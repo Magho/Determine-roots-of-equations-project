@@ -11,3 +11,5 @@ print(bool(bool1))
 
 root = call_func.compute_root()
 print(root)
+
+call_func.plot_function()
