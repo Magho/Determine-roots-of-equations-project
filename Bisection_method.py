@@ -40,11 +40,11 @@ class BracketingMethod:
 
         # create the table
 
-        # sales = {'Xu': [self.upper_bound], 'Xl': [self.lower_bound], 'Xr': [xr],
+        # table = {'Xu': [self.upper_bound], 'Xl': [self.lower_bound], 'Xr': [xr],
         #          'F(Xr)': [self.function_formula.subs(self.X, ((self.upper_bound + self.lower_bound) / 2.0))],
         #          'relative_error': [None]}
         #
-        # df = pd.DataFrame.from_dict(sales)
+        # df = pd.DataFrame.from_dict(table)
 
         i = 0
         while i < BracketingMethod.num_of_iteration:

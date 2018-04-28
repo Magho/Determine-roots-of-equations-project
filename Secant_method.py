@@ -59,6 +59,7 @@ class Secant:
             # df2 = pd.DataFrame.from_dict(row)
             # df.append(df2)
 
+            # break when reach max iteration or precision
             if (math.fabs(relative_error) <= self.precision) | (i > self.max_iterations):
                 break
 

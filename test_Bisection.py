@@ -1,10 +1,10 @@
-import Bracketing_method
+import Bisection_method
 from sympy import *
 
 x = Symbol('x')
 function_formula = x ** 3 - 25
 
-call_func = Bracketing_method.BracketingMethod(function_formula, 3.0, 2.9, 0, 0)
+call_func = Bisection_method.BracketingMethod(function_formula, 3.0, 2.9, 0, 0)
 
 bool1 = call_func.verify_there_is_a_root()
 print(bool(bool1))
