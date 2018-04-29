@@ -76,10 +76,13 @@ class BracketingMethod:
                 self.upper_bound = xr
             xr_old = xr
 
+            # TODO print table
+
             # stop if precision reached presented by max iteration
             i = i + 1
         return xr
 
+    # TODO specify bounders
     def plot_function(self):
 
         a = []

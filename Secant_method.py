@@ -68,8 +68,11 @@ class Secant:
             self.initial_xi_1 = self.initial_xi
             self.initial_xi = iterative_x
 
+            # TODO print table
+
         return iterative_x
 
+    # TODO specify bounders
     def plot_function(self):
 
         a = []

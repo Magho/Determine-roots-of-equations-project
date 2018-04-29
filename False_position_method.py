@@ -72,8 +72,11 @@ class FalsePosition:
             i = i + 1
             xr_1_old = xr_new
 
+            # TODO print table
+
         return xr_new
 
+    # TODO specify bounders
     def plot_function(self):
 
         a = []
