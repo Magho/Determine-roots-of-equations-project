@@ -1,6 +1,7 @@
 from sympy import *
 import math
 import matplotlib.pyplot as plt
+import graphlab
 
 
 # import pandas as pd
@@ -27,9 +28,6 @@ class BracketingMethod:
         function_value_at_upper_bound = self.function_formula.subs(self.X, self.upper_bound)
         function_value_at_lower_bound = self.function_formula.subs(self.X, self.lower_bound)
 
-        print(function_value_at_lower_bound)
-        print(function_value_at_upper_bound)
-
         if function_value_at_lower_bound * function_value_at_upper_bound < 0:
             return true
 
@@ -39,47 +37,43 @@ class BracketingMethod:
         return BracketingMethod.num_of_iteration
 
     def compute_root(self):
+
         xr = (self.upper_bound + self.lower_bound) / 2.0
+        fxr = float(self.function_formula.subs(self.X, (self.upper_bound + self.lower_bound) / 2.0))
 
         # create the table
-
-        # table = {'Xu': [self.upper_bound], 'Xl': [self.lower_bound], 'Xr': [xr],
-        #          'F(Xr)': [self.function_formula.subs(self.X, ((self.upper_bound + self.lower_bound) / 2.0))],
-        #          'relative_error': [None]}
-        #
-        # df = pd.DataFrame.from_dict(table)
+        table = graphlab.SFrame({'Xu': [self.upper_bound], 'Xl': [self.lower_bound],
+                                 'Xr': [(self.upper_bound + self.lower_bound) / 2.0],
+                                 'F(Xr)': [fxr], 'relative_error': [None]})
 
         i = 0
         while i < BracketingMethod.num_of_iteration:
 
             xr = (self.upper_bound + self.lower_bound) / 2.0
-
-            # stop if max_iterations reached
-            if i > self.max_iterations:
-                break
-
             function_value_at_xr = self.function_formula.subs(self.X, xr)
 
             if i > 0:
 
                 eps = (xr - xr_old) / xr
 
-                # add Row to the table
-                # row = {'Xu': [self.upper_bound], 'Xl': [self.lower_bound], 'Xr': [xr],
-                #          'F(Xr)': [self.function_formula.subs(self.X, xr)], 'relative_error': [eps]}
-                # df2 = pd.DataFrame.from_dict(row)
-                # df.append(df2)
+                fxr = float(self.function_formula.subs(self.X, xr))
+                row = graphlab.SFrame({'Xu': [self.upper_bound], 'Xl': [self.lower_bound], 'Xr': [xr],
+                                       'F(Xr)': [fxr], 'relative_error': [math.fabs(eps)]})
+                table = table.append(row)
 
             if (function_value_at_xr * self.function_formula.subs(self.X, self.upper_bound)) < 0:
                 self.lower_bound = xr
             else:
                 self.upper_bound = xr
             xr_old = xr
-
-            # TODO print table
-
-            # stop if precision reached presented by max iteration
             i = i + 1
+
+            if math.fabs(eps) <= self.precision:
+                break
+            if i >= self.max_iterations:
+                break
+
+        print (table)
         return xr
 
     # TODO specify bounders

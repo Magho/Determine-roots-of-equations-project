@@ -1,9 +1,7 @@
 from sympy import *
 import math
 import matplotlib.pyplot as plt
-
-
-# import pandas as pd
+import graphlab
 
 
 class FixedPointIteration:
@@ -35,9 +33,7 @@ class FixedPointIteration:
     def compute_root(self):
 
         # create the table
-
-        # table = {'i': [0], 'Xi': [self.initial_x], 'relative_error': [None]}
-        # df = pd.DataFrame.from_dict(table)
+        table = graphlab.SFrame({'i': [0], 'Xi': [self.initial_x], 'relative_error': [None]})
 
         i = 0
 
@@ -45,22 +41,20 @@ class FixedPointIteration:
 
             i = i + 1
 
-            iterative_x = self.function_formula.subs(self.X, self.initial_x)
+            iterative_x = float(self.function_formula.subs(self.X, self.initial_x))
             relative_error = (iterative_x - self.initial_x) / iterative_x
 
             # add Row to the table
-            # row = {'i': [i], 'Xi': [iterative_x], 'relative_error': [math.fabs(relative_error)]}
-            # df2 = pd.DataFrame.from_dict(row)
-            # df.append(df2)
+            row = graphlab.SFrame({'i': [i], 'Xi': [iterative_x], 'relative_error': [math.fabs(relative_error)]})
+            table = table.append(row)
 
             # break when reach max iteration or precision
-            if (math.fabs(relative_error) <= self.precision) | (i > self.max_iterations):
+            if (math.fabs(relative_error) <= self.precision) | (i >= self.max_iterations):
                 break
 
             self.initial_x = iterative_x
 
-            # TODO print table
-
+        print (table)
         return iterative_x
 
     # TODO specify bounders

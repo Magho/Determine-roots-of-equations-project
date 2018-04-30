@@ -1,9 +1,7 @@
 from sympy import *
 import math
 import matplotlib.pyplot as plt
-
-# import pandas as pd
-
+import graphlab
 
 class FalsePosition:
 
@@ -37,31 +35,27 @@ class FalsePosition:
         i = 0
         while True:
 
-            xr_new = ((self.lower_bound * self.function_formula.subs(self.X, self.upper_bound)) -
-                      (self.upper_bound * self.function_formula.subs(self.X, self.lower_bound))) / (
-                    self.function_formula.subs(self.X, self.upper_bound) -
-                    self.function_formula.subs(self.X, self.lower_bound))
+            xr_new = ((self.lower_bound * float(self.function_formula.subs(self.X, self.upper_bound))) -
+                      (self.upper_bound * float(self.function_formula.subs(self.X, self.lower_bound)))) / (
+                    float(self.function_formula.subs(self.X, self.upper_bound)) -
+                    float(self.function_formula.subs(self.X, self.lower_bound)))
 
-            function_value_at_xr_1_new = self.function_formula.subs(self.X, xr_new)
+            function_value_at_xr_1_new = float(self.function_formula.subs(self.X, float(xr_new)))
 
             if i == 0:
-                print()
+
                 # create the table
-                # table = {'Xu': [self.upper_bound], 'Xl': [self.lower_bound], 'Xr': [xr_new],
-                #          'F(Xr)': [function_value_at_xr_1_new], 'relative_error': [None]}
-                # df = pd.DataFrame.from_dict(table)
-
-            # break when reach max iteration or precision
-            elif (math.fabs(xr_new - xr_1_old) <= self.precision) | (i > self.max_iterations):
-                break
-
+                table = graphlab.SFrame({'Xu': [self.upper_bound], 'Xl': [self.lower_bound], 'Xr': [xr_new],
+                                         'F(Xr)': [function_value_at_xr_1_new], 'relative_error': [None]})
             else:
+
                 eps = (xr_new - xr_1_old) / xr_new
 
-                # row = {'Xu': [self.upper_bound], 'Xl': [self.lower_bound], 'Xr': [xr_new],
-                #        'F(Xr)': [self.function_formula.subs(self.X, xr_new)], 'relative_error': [eps]}
-                # df2 = pd.DataFrame.from_dict(row)
-                # df.append(df2)
+                # add row to the table
+                fxr = float(self.function_formula.subs(self.X, xr_new))
+                row = graphlab.SFrame({'Xu': [self.upper_bound], 'Xl': [self.lower_bound], 'Xr': [xr_new],
+                                       'F(Xr)': [fxr], 'relative_error': [eps]})
+                table = table.append(row)
 
             if function_value_at_xr_1_new < 0:
                 self.lower_bound = xr_new
@@ -72,8 +66,11 @@ class FalsePosition:
             i = i + 1
             xr_1_old = xr_new
 
-            # TODO print table
+            # break when reach max iteration or precision
+            if (math.fabs(xr_new - xr_1_old) <= self.precision) | (i >= self.max_iterations):
+                break
 
+        print(table)
         return xr_new
 
     # TODO specify bounders

@@ -1,9 +1,7 @@
 from sympy import *
 import math
 import matplotlib.pyplot as plt
-
-
-# import pandas as pd
+import graphlab
 
 
 class NewtonRaphson:
@@ -39,11 +37,10 @@ class NewtonRaphson:
     def compute_root(self):
 
         # create the table
-
-        # table = {'i' : [0], 'Xi': [self.initial_x], 'F(Xi)': [self.function_formula.subs(self.X, self.initial_x)],
-        #          "F'(Xi)": [self.function_div(self.initial_x)], 'relative_error': [None]}
-        #
-        # df = pd.DataFrame.from_dict(table)
+        fxi = float(self.function_formula.subs(self.X, self.initial_x))
+        fxi_div = float(self.function_div(self.initial_x))
+        table = graphlab.SFrame({'i': [0], 'Xi': [self.initial_x], 'F(Xi)': [fxi],
+                                 "F'(Xi)": [fxi_div], 'relative_error': [None]})
 
         i = 0
 
@@ -55,25 +52,24 @@ class NewtonRaphson:
                 # TODO determine what to do ?
                 print("division by zero")
 
-            iterative_x = self.initial_x - (self.function_formula.subs(self.X, self.initial_x) /
-                                            self.function_div(self.initial_x))
+            iterative_x = self.initial_x - (float(self.function_formula.subs(self.X, self.initial_x)) /
+                                            float(self.function_div(self.initial_x)))
             relative_error = (iterative_x - self.initial_x) / iterative_x
 
             # add Row to the table
-            # row = {'i': [i], 'Xi': [iterative_x], 'F(Xi)': [self.function_formula.subs(self.X, self.initial_x)],
-            #        "F'(Xi)": [self.function_div(iterative_x)],
-            #        'relative_error': [math.fabs(relative_error)]}
-            # df2 = pd.DataFrame.from_dict(row)
-            # df.append(df2)
+            fxi = float(self.function_formula.subs(self.X, self.initial_x))
+            fxi_div = float(self.function_div(iterative_x))
+            row = graphlab.SFrame({'i': [i], 'Xi': [iterative_x], 'F(Xi)': [fxi],
+                                   "F'(Xi)": [fxi_div], 'relative_error': [math.fabs(relative_error)]})
+            table = table.append(row)
 
             # break when reach max iteration or precision
-            if (math.fabs(relative_error) <= self.precision) | (i > self.max_iterations):
+            if (math.fabs(relative_error) <= self.precision) | (i >= self.max_iterations):
                 break
 
             self.initial_x = iterative_x
 
-            # TODO print table
-
+        print(table)
         return iterative_x
 
     # TODO specify bounders

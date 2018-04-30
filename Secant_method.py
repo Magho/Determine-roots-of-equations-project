@@ -1,6 +1,7 @@
 from sympy import *
 import math
 import matplotlib.pyplot as plt
+import graphlab
 
 # import pandas as pd
 
@@ -35,41 +36,39 @@ class Secant:
     def compute_root(self):
 
         # create the table
-
-        # table = {'i': [0], 'Xi': [self.initial_xi], 'Xi-1': [self.initial_xi_1],
-        #          'F(Xi)': [self.function_formula.subs(self.X, self.initial_xi)],
-        #          'F(Xi-1)': [self.function_formula.subs(self.X, self.initial_xi_1)], 'relative_error': [None]}
-        # df = pd.DataFrame.from_dict(table)
+        fxi = float(self.function_formula.subs(self.X, self.initial_xi))
+        fxi1 = float(self.function_formula.subs(self.X, self.initial_xi_1))
+        table = graphlab.SFrame(
+            {'i': [0], 'Xi': [self.initial_xi], 'Xi-1': [self.initial_xi_1], 'F(Xi)': [fxi],
+             'F(Xi-1)': [fxi1], 'relative_error': [None]})
 
         i = 0
         while True:
 
             i = i + 1
 
-            numerator = self.function_formula.subs(self.X, self.initial_xi) * (self.initial_xi - self.initial_xi_1)
-            denominator = self.function_formula.subs(self.X, self.initial_xi) - (self.initial_xi - self.initial_xi_1)
+            numerator = float(self.function_formula.subs(self.X, self.initial_xi) * (self.initial_xi - self.initial_xi_1))
+            denominator = float(self.function_formula.subs(self.X, self.initial_xi) - (self.initial_xi - self.initial_xi_1))
 
             iterative_x = self.initial_xi - (numerator / denominator)
             relative_error = (iterative_x - self.initial_xi) / iterative_x
 
             # add Row to the table
 
-            # row = {'i': [i], 'Xi': [iterative_x], 'Xi-1': [self.initial_xi],
-            #                        'F(Xi)': [self.function_formula.subs(self.X, iterative_x)],
-            #                        "F(Xi-1)": [self.function_formula.subs(self.X, self.initial_xi)],
-            #                        'relative_error': [math.fabs(relative_error)]}
-            # df2 = pd.DataFrame.from_dict(row)
-            # df.append(df2)
+            fxi = float(self.function_formula.subs(self.X, iterative_x))
+            fxi1 = float(self.function_formula.subs(self.X, self.initial_xi))
+            row = graphlab.SFrame({'i': [i], 'Xi': [iterative_x], 'Xi-1': [self.initial_xi], 'F(Xi)': [fxi],
+                                   "F(Xi-1)": [fxi1], 'relative_error': [math.fabs(relative_error)]})
+            table = table.append(row)
 
             # break when reach max iteration or precision
-            if (math.fabs(relative_error) <= self.precision) | (i > self.max_iterations):
+            if (math.fabs(relative_error) <= self.precision) | (i >= self.max_iterations):
                 break
 
             self.initial_xi_1 = self.initial_xi
             self.initial_xi = iterative_x
 
-            # TODO print table
-
+        print(table)
         return iterative_x
 
     # TODO specify bounders

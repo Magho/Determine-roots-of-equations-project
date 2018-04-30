@@ -1,6 +1,7 @@
 from sympy import *
 import math
 import matplotlib.pyplot as plt
+import graphlab
 
 
 # import pandas as pd
@@ -37,9 +38,8 @@ class BrigeVeta:
 
         # create the table1
 
-        # table1 = {'i': [0], 'Xi': [self.initial_x], 'F(Xi)': [self.function_formula.subs(self.X, self.initial_x)],
-        #              'relative_error': [None]}
-        # df1 = pd.DataFrame.from_dict(table1)
+        fxi = float(self.function_formula.subs(self.X, self.initial_x))
+        table1 = graphlab.SFrame({'i': [0], 'Xi': [self.initial_x], 'F(Xi)': [fxi], 'relative_error': [None]})
 
         max_pow = len(self.ai) - 1
         j = 0
@@ -50,8 +50,7 @@ class BrigeVeta:
             j = j + 1
 
             # create table2
-            # table2 = {'i': [max_pow], 'ai': [self.ai[0]], 'bi': [self.ai[0]], 'ci': [self.ai[0]]}
-            # df2 = pd.DataFrame.from_dict(table2)
+            table = graphlab.SFrame({'i': [max_pow], 'ai': [self.ai[0]], 'bi': [self.ai[0]], 'ci': [self.ai[0]]})
 
             i = i - 1
             bi = ci = self.ai[0]
@@ -66,33 +65,31 @@ class BrigeVeta:
                     temp = None
 
                 # add Row2 to the table2
-                # row2 = {'i': [i], 'ai': [self.ai[k]], 'bi': [bi], 'ci': [temp]}
-                # df3 = pd.DataFrame.from_dict(row2)
-                # df2.append(df3)
+                row = graphlab.SFrame({'i': [i], 'ai': [self.ai[k]], 'bi': [bi], 'ci': [temp]})
+                table = table.append(row)
 
                 k = k + 1
                 i = i - 1
 
-            # TODO print table2
+            print(table)
 
             iterative_x = self.initial_x - (bi / ci)
             relative_error = (iterative_x - self.initial_x) / iterative_x
 
             # add Row1 to the table1
-            # row1 = {'i': [j], 'Xi': [iterative_x],
-            #                                     'F(Xi)': [self.function_formula.subs(self.X, iterative_x)],
-            #                                     'relative_error': [math.fabs(relative_error)]}
-            # df4 = pd.DataFrame.from_dict(row1)
-            # df1.append(df4)
+
+            fxi = float(self.function_formula.subs(self.X, iterative_x))
+            row1 = graphlab.SFrame({'i': [j], 'Xi': [iterative_x], 'F(Xi)': [fxi],
+                                    'relative_error': [math.fabs(relative_error)]})
+            table1 = table1.append(row1)
 
             # break when reach max iteration or precision
-            if (math.fabs(relative_error) <= self.precision) | (i > self.max_iterations):
+            if (math.fabs(relative_error) <= self.precision) | (i >= self.max_iterations):
                 break
 
             self.initial_x = iterative_x
 
-            # TODO print table1
-
+        print (table1)
         return iterative_x
 
     # TODO specify bounders
