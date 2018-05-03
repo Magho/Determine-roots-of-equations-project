@@ -57,7 +57,7 @@ class FixedPointIteration:
         print (table)
         return iterative_x
 
-    # TODO specify bounders
+    # TODO specify bounders as negative x don't may give complex y
     def plot_function(self):
 
         a = []
@@ -71,4 +71,5 @@ class FixedPointIteration:
         fig = plt.figure()
         axes = fig.add_subplot(111)
         axes.plot(a, b)
+        axes.grid()
         plt.show()

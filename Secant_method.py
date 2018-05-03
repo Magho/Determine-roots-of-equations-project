@@ -85,4 +85,5 @@ class Secant:
         fig = plt.figure()
         axes = fig.add_subplot(111)
         axes.plot(a, b)
+        axes.grid()
         plt.show()

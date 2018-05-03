@@ -2,6 +2,8 @@ from sympy import *
 import math
 import matplotlib.pyplot as plt
 import graphlab
+import numpy as np
+import matplotlib.animation as animation
 
 
 # import pandas as pd
@@ -46,6 +48,25 @@ class BracketingMethod:
                                  'Xr': [(self.upper_bound + self.lower_bound) / 2.0],
                                  'F(Xr)': [fxr], 'relative_error': [None]})
 
+        # a = []
+        # b = []
+        #
+        # x = 2 * self.lower_bound - self.upper_bound
+        # for i in range(0, 150, 1):
+        #     x = (3 * self.upper_bound - 3 * self.lower_bound)/150 + x
+        #     y = self.function_formula.subs(self.X, x)
+        #     a.append(x)
+        #     b.append(y)
+        #
+        # fig = plt.figure()
+        # axes = fig.add_subplot(111)
+        # axes.plot(a, b)
+        # plt.axhline(y=0, color='b')
+        # plt.axvline(x=self.upper_bound, color='r')
+        # plt.axvline(x=self.lower_bound, color='g')
+        #
+        # plt.show()
+
         i = 0
         while i < BracketingMethod.num_of_iteration:
 
@@ -60,6 +81,8 @@ class BracketingMethod:
                 row = graphlab.SFrame({'Xu': [self.upper_bound], 'Xl': [self.lower_bound], 'Xr': [xr],
                                        'F(Xr)': [fxr], 'relative_error': [math.fabs(eps)]})
                 table = table.append(row)
+                if math.fabs(eps) <= self.precision:
+                    break
 
             if (function_value_at_xr * self.function_formula.subs(self.X, self.upper_bound)) < 0:
                 self.lower_bound = xr
@@ -68,8 +91,6 @@ class BracketingMethod:
             xr_old = xr
             i = i + 1
 
-            if math.fabs(eps) <= self.precision:
-                break
             if i >= self.max_iterations:
                 break
 
@@ -78,7 +99,6 @@ class BracketingMethod:
 
     # TODO specify bounders
     def plot_function(self):
-
         a = []
         b = []
 
@@ -89,5 +109,6 @@ class BracketingMethod:
 
         fig = plt.figure()
         axes = fig.add_subplot(111)
+        axes.grid()
         axes.plot(a, b)
         plt.show()

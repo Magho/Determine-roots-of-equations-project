@@ -67,7 +67,7 @@ class FalsePosition:
             xr_1_old = xr_new
 
             # break when reach max iteration or precision
-            if (math.fabs(xr_new - xr_1_old) <= self.precision) | (i >= self.max_iterations):
+            if (math.fabs(xr_new - xr_1_old) >= self.precision) | (i >= self.max_iterations):
                 break
 
         print(table)
@@ -87,4 +87,5 @@ class FalsePosition:
         fig = plt.figure()
         axes = fig.add_subplot(111)
         axes.plot(a, b)
+        axes.grid()
         plt.show()
