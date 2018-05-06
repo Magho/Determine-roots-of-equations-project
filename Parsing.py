@@ -1,5 +1,5 @@
 from math import *
-
+from sympy import *
 
 class Parser:
     """
@@ -105,13 +105,14 @@ e               natural number
         except ValueError:
             return False
 
-    def f(self, x):
+    def f(self):
         """
         XXXX this function throws an exception if there is something wrong with the function (syntax error , /0 , ..)
         it returns the f(x) where the function mus be set before using set_func
         :param x: the value o x
         :return: the value of f(x)
         """
+        x = Symbol('x')
         object_code = compile(self.func, '', 'eval')
         res = eval(object_code)
         return res
@@ -121,6 +122,7 @@ e               natural number
 
 p = Parser()
 
+"""
 #0
 if p.set_func("x**3 + 2 * x**2  - 4 * x + 3"):
     print(p.f(3))
@@ -180,3 +182,4 @@ try:
 except Exception as e:
     print("error from the syntax : " + str(e))
 
+"""
