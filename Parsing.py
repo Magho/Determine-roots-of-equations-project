@@ -109,11 +109,35 @@ e               natural number
         """
         XXXX this function throws an exception if there is something wrong with the function (syntax error , /0 , ..)
         it returns the f(x) where the function mus be set before using set_func
-        :param x: the value o x
-        :return: the value of f(x)
+        :return: f(x)
         """
         x = Symbol('x')
         object_code = compile(self.func, '', 'eval')
+        res = eval(object_code)
+        return res
+
+    def g(self):
+        """
+        assumes that the function f(x) is on the format
+                f(x) =   a * g(x) (- or +) a*x
+        """
+
+        g = self.func
+        count = len(g)-1
+        number_of_xs =0
+        while g[count] != '-' and g[count] != '+':
+            if count < 0 or number_of_xs > 1:
+                return False
+            if g[count] == 'x':
+                g[count] = '1'
+                number_of_xs += 1
+            count -= 1
+        sign = g[count]
+        g = '('+g[:count]+')/('+g[count+1:]+')'
+        if sign == '+':
+            g = '-1*'+g
+        x = Symbol('x')
+        object_code = compile(g, '', 'eval')
         res = eval(object_code)
         return res
 
@@ -121,6 +145,11 @@ e               natural number
 
 
 p = Parser()
+
+
+
+
+
 
 """
 #0
