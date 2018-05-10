@@ -114,7 +114,18 @@ e               natural number
         x = Symbol('x')
         object_code = compile(self.func, '', 'eval')
         res = eval(object_code)
+
         return res
+
+    def poly_coeffs(self):
+        """
+
+        :return:
+        """
+        x = Symbol('x')
+        object_code = compile(self.func, '', 'eval')
+        res = eval(object_code)
+        return Poly(res).all_coeffs()
 
     def g(self):
         """
@@ -129,7 +140,10 @@ e               natural number
             if count < 0 or number_of_xs > 1:
                 return False
             if g[count] == 'x':
-                g[count] = '1'
+                if count+1<len(g):
+                  g = g[:count]+'1'+g[count+1:]
+                else :
+                  g = g[:count]+'1'
                 number_of_xs += 1
             count -= 1
         sign = g[count]
@@ -146,11 +160,14 @@ e               natural number
 
 p = Parser()
 
+p.set_func("4+sin(5*x)-exp(4/x)+30*x")
+s=p.g()
+print(s)
 
+p.set_func("7+x**5+x-70*x**2")
+print(p.poly_coeffs())
 
-
-
-
+print(p.f())
 """
 #0
 if p.set_func("x**3 + 2 * x**2  - 4 * x + 3"):
