@@ -1,81 +1,85 @@
 import copy
 import time
-from numpy import arange
+from numpy import arange,pi
 from methods import Bisection_method, False_position_method, Secant_method, Fixed_point_iteration_method, \
-    Newton_raphson_method
+    Newton_raphson_method, Brige_vieta_method
 from appJar import gui
 from Parsing import Parser
 from sympy import *
 
-def get_tables_data():
-    # list of 2D lists
-    # each 2D list is a table_data
-    data = [[["F(Xr)", "Xl", "Xr", "Xu", "relative_error"],
-            [0.672375, 2.9, 2.95, 3.0, None],
-            [0.025203125, 2.9, 2.925, 2.95, 0.00854700854701],
-            [-0.294263671875, 2.9, 2.9125, 2.925, 0.00429184549356],
-            [-0.134872314453, 2.9125, 2.91875, 2.925, 0.00214132762313],
-            [-0.0549201965332, 2.91875, 2.921875, 2.925, 0.00106951871658],
-            [-0.0148799476624, 2.921875, 2.9234375, 2.925, 0.00053447354356],
-            [0.00515623426437, 2.9234375, 2.92421875, 2.925, 0.000267165375367],
-            [-0.00486319512129, 2.9234375, 2.923828125, 2.92421875, 0.000133600534402],
-            [0.000146184943613, 2.923828125, 2.9240234375, 2.92421875, 6.67958052234e-05]],
-            [["F(Xr)", "Xl", "Xr", "Xu", "relative_error"],
-             [0.672375, 2.9, 2.95, 3.0, None],
-             [0.025203125, 2.9, 2.925, 2.95, 0.00854700854701],
-             [-0.294263671875, 2.9, 2.9125, 2.925, 0.00429184549356],
-             [-0.134872314453, 2.9125, 2.91875, 2.925, 0.00214132762313],
-             [-0.0549201965332, 2.91875, 2.921875, 2.925, 0.00106951871658],
-             [-0.0148799476624, 2.921875, 2.9234375, 2.925, 0.00053447354356],
-             [0.00515623426437, 2.9234375, 2.92421875, 2.925, 0.000267165375367],
-             [-0.00486319512129, 2.9234375, 2.923828125, 2.92421875, 0.000133600534402],
-             [0.000146184943613, 2.923828125, 2.9240234375, 2.92421875, 6.67958052234e-05]],
-            [["F(Xr)", "Xl", "Xr", "Xu", "relative_error"],
-             [0.672375, 2.9, 2.95, 3.0, None],
-             [0.025203125, 2.9, 2.925, 2.95, 0.00854700854701],
-             [-0.294263671875, 2.9, 2.9125, 2.925, 0.00429184549356],
-             [-0.134872314453, 2.9125, 2.91875, 2.925, 0.00214132762313],
-             [-0.0549201965332, 2.91875, 2.921875, 2.925, 0.00106951871658],
-             [-0.0148799476624, 2.921875, 2.9234375, 2.925, 0.00053447354356],
-             [0.00515623426437, 2.9234375, 2.92421875, 2.925, 0.000267165375367],
-             [-0.00486319512129, 2.9234375, 2.923828125, 2.92421875, 0.000133600534402],
-             [0.000146184943613, 2.923828125, 2.9240234375, 2.92421875, 6.67958052234e-05]]
-            ]
-    return data
 
-
-def showPlot(current_mode):
+def showPlot(current_mode,(x,y)):
     if (current_mode == "Fast Mode"):
-        app.updatePlot("fast_plot",*get_plot_xy())
-        showLabels("fast_plot")
+        axes = app.updatePlot("fast_plot",(x,y))
+        showLabels("fast_plot",axes)
     elif (current_mode == "Single Step Mode"):
-        app.updatePlot("single_step_plot", *get_plot_xy())
-        showLabels("single_step_plot")
+        axes = app.updatePlot("single_step_plot", (x,y))
+        showLabels("single_step_plot",axes)
 
-tables = []
-tables_copy = []
+fast_tables = []
+fast_tables_copy = []
 def show_fast_mode_table():
-    tables_copy = copy.deepcopy(tables)
-    data = get_tables_data()
+    print(data)
+    tables_copy = copy.deepcopy(fast_tables)
     app.openScrollPane("fast_table_pane")
     for table_label in tables_copy:
         app.removeTable(table_label)
-        tables.remove(table_label)
+        fast_tables.remove(table_label)
     for table_data in data:
-        label = "fast_table_" + str(len(tables))
-        tables.append(label)
-        app.addTable(label,table_data)
+        label = "fast_table_" + str(len(fast_tables))
+        fast_tables.append(label)
+        app.addTable(label,table_data,border="sunken",colspan=2)
+        app.setTableWidth(label,700)
     app.stopScrollPane()
 
+last_table_label = ""
+step_count = 1
+single_step_tables = []
+single_step_tables_copy = []
 def show_single_step_mode_table():
+    single_step_tables_copy = copy.deepcopy(single_step_tables)
+    app.openScrollPane("single_step_table_pane")
+    for table_label in single_step_tables_copy:
+        app.removeTable(table_label)
+        single_step_tables.remove(table_label)
+    for table_data in data:
+        label = "single_step_table_" + str(len(single_step_tables))
+        single_step_tables.append(label)
+        app.addTable(label,table_data,border="sunken",colspan=2)
+        app.setTableWidth(label,600)
+    global last_table_label
+    last_table_label = "single_step_table_" + str(len(single_step_tables)-1)
+    app.deleteAllTableRows(last_table_label)
+    global step_count
+    step_count = 1
+    app.stopScrollPane()
     print("singlestepmode")
 
+def navigate_steps(button):
+    global step_count
+    global last_table_label
+    if button == "next":
+        if step_count >= len(data[len(data) - 1]):
+            pass
+        else:
+            print(data[len(data)-1][step_count])
+            app.addTableRow(last_table_label, data[len(data)-1][step_count])
+            step_count += 1
+    if button == "prev":
+        if step_count <= 1:
+            pass
+        else:
+            print (step_count-2)
+            app.deleteTableRow(last_table_label ,step_count-2)
+            step_count -= 1
+
+
 def get_plot_xy():
-    x = arange(0.0, 3.0, 0.01)
+    x = arange(-3.14, 3.14, 0.05)
     y = x
     return x,y
 
-def showLabels(plot_label):
+def showLabels(plot_label, axes):
     axes.legend(['The curve'])
     axes.set_xlabel("X Axes")
     axes.set_ylabel("Y Axes")
@@ -127,8 +131,6 @@ def solve():
         checkParameters(method, params)
         parser = Parser()
         if(parser.set_func(params["f(x)="])):
-            x = Symbol('x')
-            #func = x ** 3 - 25
             func = parser.f()
             first_guess = params["First Initial Guess"]
             second_guess = params["Second Initial Guess"]
@@ -146,18 +148,18 @@ def solve():
             elif(method == "Secant"):
                 call_func = Secant_method.Secant(func, second_guess, first_guess, max_iterations, epsilon)
             elif(method == "Bierge Vieta"):
-                # TODO: how can i get the coefficients of the function (ai)
-                 call_func = Brige_vieta_method.BrigeVeta(func, first_guess, parser.poly_coeffs(), max_iterations, epsilon)
-
+                call_func = Brige_vieta_method.BrigeVeta(func, first_guess, parser.poly_coeffs(), max_iterations, epsilon)
             bool1 = call_func.verify_there_is_a_root()
             print(bool(bool1))  #debugging
             num_of_iterations = call_func.determine_number_of_iterations()
             print(num_of_iterations)    #debugging
-            root = call_func.compute_root()
+            global data
+            data, root = call_func.compute_root()
             print(root) #debugging
             app.setLabel("root","root of f(x) = " + str(root))
+            app.setLabel("iterations","number of iterations = " + str(num_of_iterations))
             current_mode = app.getTabbedFrameSelectedTab("TabbedFrame")
-            showPlot(current_mode)
+            #showPlot(current_mode,call_func.get_x_y())
             if(current_mode == "Fast Mode"):
                 show_fast_mode_table()
             elif(current_mode == "Single Step Mode"):
@@ -232,24 +234,32 @@ app.setEntry("Epsilon", 0.0001)
 app.addButton("Solve",solve)
 styleButton("Solve")
 app.stopLabelFrame()
-
-app.addLabel("root","root of f(x) = ?")
+app.addLabel("iterations","number of iterations = ?",1,0)
+app.setLabelBg("iterations","light blue")
+app.addLabel("root","root of f(x) = ?",1,1)
 app.setLabelBg("root","light blue")
+
 # Output Frame
-app.startTabbedFrame("TabbedFrame",2,0,colspan=2)
+app.startTabbedFrame("TabbedFrame",3,0,colspan=2)
 # Fast Mode Tab
 app.startTab("Fast Mode")
-axes = app.addPlot("fast_plot", *get_plot_xy(), row=0, column=0, width=6, height=4)
-showLabels("fast_plot")
+axes = app.addPlot("fast_plot", *get_plot_xy(), row=0, column=0, width=4, height=4)
+showLabels("fast_plot", axes)
 app.startScrollPane("fast_table_pane",0,1)
 app.stopScrollPane()
 app.stopTab()
 
 # Single Step Mode Tab
 app.startTab("Single Step Mode")
-axes = app.addPlot("single_step_plot", *get_plot_xy(), row=0, column=0, width=6, height=4)
-showLabels("single_step_plot")
+axes = app.addPlot("single_step_plot", *get_plot_xy(), row=0, column=0, width=4, height=4)
+showLabels("single_step_plot", axes)
 app.startScrollPane("single_step_table_pane",0,1)
+app.addButton("prev",navigate_steps,0,0)
+styleButton("prev")
+app.setButtonStickey("prev","left")
+app.addButton("next",navigate_steps,0,1)
+styleButton("next")
+app.setButtonStickey("next","right")
 app.stopScrollPane()
 app.stopTab()
 app.stopTabbedFrame()
