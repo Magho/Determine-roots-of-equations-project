@@ -1,4 +1,4 @@
-import Brige_vieta_method
+from methods import Brige_vieta_method
 from sympy import *
 
 x = Symbol('x')

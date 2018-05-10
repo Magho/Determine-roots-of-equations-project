@@ -1,4 +1,4 @@
-import Bisection_method
+from methods import Bisection_method
 from sympy import *
 
 
@@ -16,6 +16,7 @@ print(num_of_iterations)
 
 root = call_func.compute_root()
 print(root)
+
 
 call_func.plot_function()
 

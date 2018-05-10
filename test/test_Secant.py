@@ -1,4 +1,4 @@
-import Secant_method
+from methods import Secant_method
 from sympy import *
 from sympy.functions import exp
 

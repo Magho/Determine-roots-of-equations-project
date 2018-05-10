@@ -1,4 +1,4 @@
-import Newton_raphson_method
+from methods import Newton_raphson_method
 from sympy import *
 #
 # x = Symbol('x')
