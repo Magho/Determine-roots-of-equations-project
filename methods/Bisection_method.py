@@ -78,6 +78,11 @@ class BracketingMethod:
 
     def get_x_y(self):
 
-        x = arange(self.upper_bound, self.lower_bound, (self.upper_bound - self.lower_bound)/100)
-        y = self.function_formula.evalf(subs={self.X: x})
-        return x, y
+        a = []
+        b = []
+
+        for x in range(-50, 50, 1):
+            y = self.function_formula.evalf(subs={self.X: x})
+            a.append(x)
+            b.append(y)
+        return a, b

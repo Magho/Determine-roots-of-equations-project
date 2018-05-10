@@ -95,6 +95,11 @@ class BrigeVeta:
 
     def get_x_y(self):
 
-        x = arange(-50.0, 50.0, 1.0)
-        y = self.function_formula.evalf(subs={self.X: x})
-        return x, y
+        a = []
+        b = []
+
+        for x in range(-50, 50, 1):
+            y = self.function_formula.evalf(subs={self.X: x})
+            a.append(x)
+            b.append(y)
+        return a, b
