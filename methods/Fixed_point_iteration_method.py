@@ -54,8 +54,9 @@ class FixedPointIteration:
 
             self.initial_x = iterative_x
 
-        print (table)
-        return table, iterative_x
+        final_table = [table]
+        print (final_table)
+        return final_table, iterative_x
 
     def get_x_y(self):
 

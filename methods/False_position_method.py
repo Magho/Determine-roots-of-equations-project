@@ -72,8 +72,9 @@ class FalsePosition:
             if (math.fabs(xr_new - xr_1_old) >= self.precision) | (i >= self.max_iterations):
                 break
 
-        print(table)
-        return table, xr_new
+        final_table = [table]
+        print(final_table)
+        return final_table, xr_new
 
     def get_x_y(self):
 

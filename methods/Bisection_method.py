@@ -72,8 +72,9 @@ class BracketingMethod:
             if i >= self.max_iterations:
                 break
 
-        print (table)
-        return table, xr
+        final_table = [table]
+        print (final_table)
+        return final_table, xr
 
     def get_x_y(self):
 

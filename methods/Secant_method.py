@@ -65,8 +65,9 @@ class Secant:
             self.initial_xi_1 = self.initial_xi
             self.initial_xi = iterative_x
 
-        print(table)
-        return table, iterative_x
+        final_table = [table]
+        print(final_table)
+        return final_table, iterative_x
 
     def get_x_y(self):
 
