@@ -52,7 +52,7 @@ class BracketingMethod:
 
                 eps = (xr - xr_old) / xr
 
-                fxr = float(self.function_formula.evalf(self.X, xr))
+                fxr = self.function_formula.evalf(subs={self.X: xr})
 
                 # add new row
                 row = [self.upper_bound, self.lower_bound, xr, fxr, math.fabs(eps)]
