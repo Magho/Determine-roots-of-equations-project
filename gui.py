@@ -128,8 +128,8 @@ def solve():
         parser = Parser()
         if(parser.set_func(params["f(x)="])):
             x = Symbol('x')
-            func = x ** 3 - 25
-            #func = parser.func
+            #func = x ** 3 - 25
+            func = parser.f()
             first_guess = params["First Initial Guess"]
             second_guess = params["Second Initial Guess"]
             max_iterations = params["Max Iterations"]
@@ -147,8 +147,8 @@ def solve():
                 call_func = Secant_method.Secant(func, second_guess, first_guess, max_iterations, epsilon)
             elif(method == "Bierge Vieta"):
                 # TODO: how can i get the coefficients of the function (ai)
-                # call_func = Brige_vieta_method.BrigeVeta(func, first_guess, [1.0, -3.0, 2.0], max_iterations, epsilon)
-                pass
+                 call_func = Brige_vieta_method.BrigeVeta(func, first_guess, parser.poly_coeffs(), max_iterations, epsilon)
+
             bool1 = call_func.verify_there_is_a_root()
             print(bool(bool1))  #debugging
             num_of_iterations = call_func.determine_number_of_iterations()
