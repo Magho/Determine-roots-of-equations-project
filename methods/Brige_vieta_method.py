@@ -32,7 +32,7 @@ class BrigeVeta:
 
     def compute_root(self):
 
-        table = [[[]]]
+        table = []
         fxi = float(self.function_formula.subs(self.X, self.initial_x))
 
         # create the table1
@@ -71,7 +71,7 @@ class BrigeVeta:
                 k = k + 1
                 i = i - 1
 
-            print(table2)
+            #print(table2)
             table.append(table2)
 
             iterative_x = self.initial_x - (bi / ci)
