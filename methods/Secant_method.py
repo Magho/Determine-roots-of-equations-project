@@ -1,9 +1,6 @@
 from sympy import *
 import math
-import matplotlib.pyplot as plt
-import graphlab
-
-# import pandas as pd
+from numpy import arange
 
 
 class Secant:
@@ -24,8 +21,8 @@ class Secant:
             self.precision = 0.0001
 
     # def verify_there_is_a_root(self):
-    #     function_value_at_upper_bound = self.function_formula.subs(self.X, self.initial_xi)
-    #     function_value_at_lower_bound = self.function_formula.subs(self.X, self.initial_xi_1)
+    #     function_value_at_upper_bound = self.function_formula.evalf(self.X, self.initial_xi)
+    #     function_value_at_lower_bound = self.function_formula.evalf(self.X, self.initial_xi_1)
     #
     #     print(function_value_at_lower_bound)
     #     print(function_value_at_upper_bound)
@@ -35,31 +32,31 @@ class Secant:
 
     def compute_root(self):
 
+        fxi = float(self.function_formula.evalf(subs={self.X: self.initial_xi}))
+        fxi1 = float(self.function_formula.evalf(subs={self.X: self.initial_xi_1}))
+
         # create the table
-        fxi = float(self.function_formula.subs(self.X, self.initial_xi))
-        fxi1 = float(self.function_formula.subs(self.X, self.initial_xi_1))
-        table = graphlab.SFrame(
-            {'i': [0], 'Xi': [self.initial_xi], 'Xi-1': [self.initial_xi_1], 'F(Xi)': [fxi],
-             'F(Xi-1)': [fxi1], 'relative_error': [None]})
+        table = [['i', 'Xi', 'Xi-1', 'F(Xi)', 'F(Xi-1)', 'relative_error']]
+        row = [0, self.initial_xi, self.initial_xi_1, fxi, fxi1, None]
+        table.append(row)
 
         i = 0
         while True:
 
             i = i + 1
 
-            numerator = float(self.function_formula.subs(self.X, self.initial_xi) * (self.initial_xi - self.initial_xi_1))
-            denominator = float(self.function_formula.subs(self.X, self.initial_xi) - (self.initial_xi - self.initial_xi_1))
+            numerator = float(self.function_formula.evalf(subs={self.X: self.initial_xi}) * (self.initial_xi - self.initial_xi_1))
+            denominator = float(self.function_formula.evalf(subs={self.X: self.initial_xi}) - (self.initial_xi - self.initial_xi_1))
 
             iterative_x = self.initial_xi - (numerator / denominator)
             relative_error = (iterative_x - self.initial_xi) / iterative_x
 
-            # add Row to the table
+            fxi = float(self.function_formula.evalf(subs={self.X: iterative_x}))
+            fxi1 = float(self.function_formula.evalf(subs={self.X: self.initial_xi}))
 
-            fxi = float(self.function_formula.subs(self.X, iterative_x))
-            fxi1 = float(self.function_formula.subs(self.X, self.initial_xi))
-            row = graphlab.SFrame({'i': [i], 'Xi': [iterative_x], 'Xi-1': [self.initial_xi], 'F(Xi)': [fxi],
-                                   "F(Xi-1)": [fxi1], 'relative_error': [math.fabs(relative_error)]})
-            table = table.append(row)
+            # add Row to the table
+            row = [i, iterative_x, self.initial_xi, fxi, fxi1, math.fabs(relative_error)]
+            table.append(row)
 
             # break when reach max iteration or precision
             if (math.fabs(relative_error) <= self.precision) | (i >= self.max_iterations):
@@ -69,21 +66,10 @@ class Secant:
             self.initial_xi = iterative_x
 
         print(table)
-        return iterative_x
+        return table, iterative_x
 
-    # TODO specify bounders
-    def plot_function(self):
+    def get_x_y(self):
 
-        a = []
-        b = []
-
-        for x in range(-50, 50, 1):
-            y = self.function_formula.subs(self.X, x)
-            a.append(x)
-            b.append(y)
-
-        fig = plt.figure()
-        axes = fig.add_subplot(111)
-        axes.plot(a, b)
-        axes.grid()
-        plt.show()
+        x = arange(-50.0, 50.0, 1.0)
+        y = self.function_formula.evalf(subs={self.X: x})
+        return x, y

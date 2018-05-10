@@ -1,7 +1,6 @@
 from sympy import *
 import math
-import matplotlib.pyplot as plt
-import graphlab
+from numpy import arange
 
 
 class NewtonRaphson:
@@ -22,11 +21,11 @@ class NewtonRaphson:
 
     def function_div(self, num, x=Symbol('x')):
         func1_div_x = self.function_formula.diff(x)
-        return func1_div_x.subs(self.X, num)
+        return func1_div_x.evalf(subs={self.X: num})
 
     # def verify_there_is_a_root(self):
-    #     function_value_at_upper_bound = self.function_formula.subs(self.X, self.initial_x)
-    #     function_value_at_lower_bound = self.function_formula.subs(self.X, self.lower_bound)
+    #     function_value_at_upper_bound = self.function_formula.evalf(self.X, self.initial_x)
+    #     function_value_at_lower_bound = self.function_formula.evalf(self.X, self.lower_bound)
     #
     #     print(function_value_at_lower_bound)
     #     print(function_value_at_upper_bound)
@@ -36,11 +35,13 @@ class NewtonRaphson:
 
     def compute_root(self):
 
-        # create the table
-        fxi = float(self.function_formula.subs(self.X, self.initial_x))
+        fxi = float(self.function_formula.evalf(subs={self.X: self.initial_x}))
         fxi_div = float(self.function_div(self.initial_x))
-        table = graphlab.SFrame({'i': [0], 'Xi': [self.initial_x], 'F(Xi)': [fxi],
-                                 "F'(Xi)": [fxi_div], 'relative_error': [None]})
+
+        # create the table
+        table = [['i', 'Xi', 'F(Xi)', "F'(Xi)", 'relative_error']]
+        row = [0, self.initial_x, fxi, fxi_div, None]
+        table.append(row)
 
         i = 0
 
@@ -52,16 +53,16 @@ class NewtonRaphson:
                 # TODO determine what to do ?
                 print("division by zero")
 
-            iterative_x = self.initial_x - (float(self.function_formula.subs(self.X, self.initial_x)) /
+            iterative_x = self.initial_x - (float(self.function_formula.evalf(subs={self.X: self.initial_x})) /
                                             float(self.function_div(self.initial_x)))
             relative_error = (iterative_x - self.initial_x) / iterative_x
 
-            # add Row to the table
-            fxi = float(self.function_formula.subs(self.X, self.initial_x))
+            fxi = float(self.function_formula.evalf(subs={self.X: self.initial_x}))
             fxi_div = float(self.function_div(iterative_x))
-            row = graphlab.SFrame({'i': [i], 'Xi': [iterative_x], 'F(Xi)': [fxi],
-                                   "F'(Xi)": [fxi_div], 'relative_error': [math.fabs(relative_error)]})
-            table = table.append(row)
+
+            # add Row to the table
+            row = [i, iterative_x, fxi, fxi_div, math.fabs(relative_error)]
+            table.append(row)
 
             # break when reach max iteration or precision
             if (math.fabs(relative_error) <= self.precision) | (i >= self.max_iterations):
@@ -70,37 +71,10 @@ class NewtonRaphson:
             self.initial_x = iterative_x
 
         print(table)
-        return iterative_x
+        return table, iterative_x
 
-    # TODO specify bounders
-    def plot_function(self):
+    def get_x_y(self):
 
-        a = []
-        b = []
-
-        for x in range(-50, 50, 1):
-            y = self.function_formula.subs(self.X, x)
-            a.append(x)
-            b.append(y)
-
-        fig = plt.figure()
-        axes = fig.add_subplot(111)
-        axes.plot(a, b)
-        plt.show()
-
-    # TODO specify bounders
-    def plot_derivative_function(self):
-
-        a = []
-        b = []
-
-        for x in range(-50, 50, 1):
-            y = self.function_div(x)
-            a.append(x)
-            b.append(y)
-
-        fig = plt.figure()
-        axes = fig.add_subplot(111)
-        axes.plot(a, b)
-        axes.grid()
-        plt.show()
+        x = arange(-50.0, 50.0, 1.0)
+        y = self.function_formula.evalf(subs={self.X: x})
+        return x, y
