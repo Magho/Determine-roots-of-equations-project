@@ -1,12 +1,6 @@
 from sympy import *
 import math
-import matplotlib.pyplot as plt
-import graphlab
-import numpy as np
-import matplotlib.animation as animation
-
-
-# import pandas as pd
+from numpy import arange
 
 
 class BracketingMethod:
@@ -27,8 +21,8 @@ class BracketingMethod:
             self.precision = 0.0001
 
     def verify_there_is_a_root(self):
-        function_value_at_upper_bound = self.function_formula.subs(self.X, self.upper_bound)
-        function_value_at_lower_bound = self.function_formula.subs(self.X, self.lower_bound)
+        function_value_at_upper_bound = self.function_formula.evalf(subs={self.X: self.upper_bound})
+        function_value_at_lower_bound = self.function_formula.evalf(subs={self.X: self.lower_bound})
 
         if function_value_at_lower_bound * function_value_at_upper_bound < 0:
             return true
@@ -41,53 +35,37 @@ class BracketingMethod:
     def compute_root(self):
 
         xr = (self.upper_bound + self.lower_bound) / 2.0
-        fxr = float(self.function_formula.subs(self.X, (self.upper_bound + self.lower_bound) / 2.0))
+        fxr = float(self.function_formula.evalf(subs={self.X: ((self.upper_bound + self.lower_bound) / 2.0)}))
 
         # create the table
-        table = graphlab.SFrame({'Xu': [self.upper_bound], 'Xl': [self.lower_bound],
-                                 'Xr': [(self.upper_bound + self.lower_bound) / 2.0],
-                                 'F(Xr)': [fxr], 'relative_error': [None]})
-
-        # a = []
-        # b = []
-        #
-        # x = 2 * self.lower_bound - self.upper_bound
-        # for i in range(0, 150, 1):
-        #     x = (3 * self.upper_bound - 3 * self.lower_bound)/150 + x
-        #     y = self.function_formula.subs(self.X, x)
-        #     a.append(x)
-        #     b.append(y)
-        #
-        # fig = plt.figure()
-        # axes = fig.add_subplot(111)
-        # axes.plot(a, b)
-        # plt.axhline(y=0, color='b')
-        # plt.axvline(x=self.upper_bound, color='r')
-        # plt.axvline(x=self.lower_bound, color='g')
-        #
-        # plt.show()
+        table = [['Xu', 'Xl', 'Xr', 'F(Xr)', 'relative_error']]
+        row = [self.upper_bound, self.lower_bound, (self.upper_bound + self.lower_bound) / 2.0, fxr, None]
+        table.append(row)
 
         i = 0
         while i < BracketingMethod.num_of_iteration:
 
             xr = (self.upper_bound + self.lower_bound) / 2.0
-            function_value_at_xr = self.function_formula.subs(self.X, xr)
+            function_value_at_xr = self.function_formula.evalf(subs={self.X: xr})
 
             if i > 0:
 
                 eps = (xr - xr_old) / xr
 
-                fxr = float(self.function_formula.subs(self.X, xr))
-                row = graphlab.SFrame({'Xu': [self.upper_bound], 'Xl': [self.lower_bound], 'Xr': [xr],
-                                       'F(Xr)': [fxr], 'relative_error': [math.fabs(eps)]})
-                table = table.append(row)
+                fxr = float(self.function_formula.evalf(self.X, xr))
+
+                # add new row
+                row = [self.upper_bound, self.lower_bound, xr, fxr, math.fabs(eps)]
+                table.append(row)
+
                 if math.fabs(eps) <= self.precision:
                     break
 
-            if (function_value_at_xr * self.function_formula.subs(self.X, self.upper_bound)) < 0:
+            if (function_value_at_xr * self.function_formula.evalf(subs={self.X: self.upper_bound})) < 0:
                 self.lower_bound = xr
             else:
                 self.upper_bound = xr
+
             xr_old = xr
             i = i + 1
 
@@ -95,20 +73,10 @@ class BracketingMethod:
                 break
 
         print (table)
-        return xr
+        return table, xr
 
-    # TODO specify bounders
-    def plot_function(self):
-        a = []
-        b = []
+    def get_x_y(self):
 
-        for x in range(-50, 50, 1):
-            y = self.function_formula.subs(self.X, x)
-            a.append(x)
-            b.append(y)
-
-        fig = plt.figure()
-        axes = fig.add_subplot(111)
-        axes.grid()
-        axes.plot(a, b)
-        plt.show()
+        x = arange(self.upper_bound, self.lower_bound, (self.upper_bound - self.lower_bound)/100)
+        y = self.function_formula.evalf(subs={self.X: x})
+        return x, y

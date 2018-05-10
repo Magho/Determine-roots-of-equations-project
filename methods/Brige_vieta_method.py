@@ -1,10 +1,6 @@
 from sympy import *
 import math
-import matplotlib.pyplot as plt
-import graphlab
-
-
-# import pandas as pd
+from numpy import arange
 
 
 class BrigeVeta:
@@ -36,11 +32,13 @@ class BrigeVeta:
 
     def compute_root(self):
 
-        # create the table1
-
+        table = [[[]]]
         fxi = float(self.function_formula.subs(self.X, self.initial_x))
-        table1 = graphlab.SFrame({'i': [0], 'Xi': [self.initial_x], 'F(Xi)': [fxi], 'relative_error': [None]})
 
+        # create the table1
+        table1 = [['i', 'Xi', 'F(Xi)', 'relative_error']]
+        row = [0, self.initial_x, fxi, None]
+        table1.append(row)
         max_pow = len(self.ai) - 1
         j = 0
 
@@ -50,7 +48,9 @@ class BrigeVeta:
             j = j + 1
 
             # create table2
-            table = graphlab.SFrame({'i': [max_pow], 'ai': [self.ai[0]], 'bi': [self.ai[0]], 'ci': [self.ai[0]]})
+            table2 = [['i', 'ai', 'bi', 'ci']]
+            row = [max_pow, self.ai[0], self.ai[0], self.ai[0]]
+            table2.append(row)
 
             i = i - 1
             bi = ci = self.ai[0]
@@ -65,23 +65,23 @@ class BrigeVeta:
                     temp = None
 
                 # add Row2 to the table2
-                row = graphlab.SFrame({'i': [i], 'ai': [self.ai[k]], 'bi': [bi], 'ci': [temp]})
-                table = table.append(row)
+                row = [i, self.ai[k], bi, temp]
+                table2.append(row)
 
                 k = k + 1
                 i = i - 1
 
-            print(table)
+            print(table2)
+            table.append(table2)
 
             iterative_x = self.initial_x - (bi / ci)
             relative_error = (iterative_x - self.initial_x) / iterative_x
 
-            # add Row1 to the table1
-
             fxi = float(self.function_formula.subs(self.X, iterative_x))
-            row1 = graphlab.SFrame({'i': [j], 'Xi': [iterative_x], 'F(Xi)': [fxi],
-                                    'relative_error': [math.fabs(relative_error)]})
-            table1 = table1.append(row1)
+
+            # add Row1 to the table1
+            row = [j, iterative_x, fxi, math.fabs(relative_error)]
+            table1.append(row)
 
             # break when reach max iteration or precision
             if (math.fabs(relative_error) <= self.precision) | (i >= self.max_iterations):
@@ -90,21 +90,11 @@ class BrigeVeta:
             self.initial_x = iterative_x
 
         print (table1)
-        return iterative_x
+        table.append(table1)
+        return table, iterative_x
 
-    # TODO specify bounders
-    def plot_function(self):
+    def get_x_y(self):
 
-        a = []
-        b = []
-
-        for x in range(-50, 50, 1):
-            y = self.function_formula.subs(self.X, x)
-            a.append(x)
-            b.append(y)
-
-        fig = plt.figure()
-        axes = fig.add_subplot(111)
-        axes.plot(a, b)
-        axes.grid()
-        plt.show()
+        x = arange(-50.0, 50.0, 1.0)
+        y = self.function_formula.evalf(subs={self.X: x})
+        return x, y

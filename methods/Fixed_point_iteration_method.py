@@ -1,14 +1,12 @@
 from sympy import *
 import math
-import matplotlib.pyplot as plt
-import graphlab
+from numpy import arange
 
 
 class FixedPointIteration:
 
     num_of_iteration = 0
 
-    # TODO pass g(x) function to me
     def __init__(self, function_formula, initial_x, max_iterations, precision, x=Symbol('x')):
         self.function_formula = function_formula
         self.initial_x = initial_x
@@ -21,8 +19,8 @@ class FixedPointIteration:
             self.precision = 0.0001
 
     # def verify_there_is_a_root(self):
-    #     function_value_at_upper_bound = self.function_formula.subs(self.X, self.initial_x)
-    #     function_value_at_lower_bound = self.function_formula.subs(self.X, self.lower_bound)
+    #     function_value_at_upper_bound = self.function_formula.evalf(self.X, self.initial_x)
+    #     function_value_at_lower_bound = self.function_formula.evalf(self.X, self.lower_bound)
     #
     #     print(function_value_at_lower_bound)
     #     print(function_value_at_upper_bound)
@@ -33,7 +31,9 @@ class FixedPointIteration:
     def compute_root(self):
 
         # create the table
-        table = graphlab.SFrame({'i': [0], 'Xi': [self.initial_x], 'relative_error': [None]})
+        table = [['i', 'Xi', 'relative_error']]
+        row = [0, self.initial_x, None]
+        table.append(row)
 
         i = 0
 
@@ -41,12 +41,12 @@ class FixedPointIteration:
 
             i = i + 1
 
-            iterative_x = float(self.function_formula.subs(self.X, self.initial_x))
+            iterative_x = float(self.function_formula.evalf(subs={self.X: self.initial_x}))
             relative_error = (iterative_x - self.initial_x) / iterative_x
 
             # add Row to the table
-            row = graphlab.SFrame({'i': [i], 'Xi': [iterative_x], 'relative_error': [math.fabs(relative_error)]})
-            table = table.append(row)
+            row = [i, iterative_x, math.fabs(relative_error)]
+            table.append(row)
 
             # break when reach max iteration or precision
             if (math.fabs(relative_error) <= self.precision) | (i >= self.max_iterations):
@@ -55,21 +55,11 @@ class FixedPointIteration:
             self.initial_x = iterative_x
 
         print (table)
-        return iterative_x
+        return table, iterative_x
 
-    # TODO specify bounders as negative x don't may give complex y
-    def plot_function(self):
+    def get_x_y(self):
 
-        a = []
-        b = []
+        x = arange(-50.0, 50.0, 1.0)
+        y = self.function_formula.evalf(subs={self.X: x})
+        return x, y
 
-        for x in range(-50, 50, 1):
-            y = self.function_formula.subs(self.X, x)
-            a.append(x)
-            b.append(y)
-
-        fig = plt.figure()
-        axes = fig.add_subplot(111)
-        axes.plot(a, b)
-        axes.grid()
-        plt.show()

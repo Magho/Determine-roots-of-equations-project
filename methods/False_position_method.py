@@ -1,7 +1,7 @@
 from sympy import *
 import math
-import matplotlib.pyplot as plt
-import graphlab
+from numpy import arange
+
 
 class FalsePosition:
 
@@ -21,8 +21,8 @@ class FalsePosition:
             self.precision = 0.0001
 
     def verify_there_is_a_root(self):
-        function_value_at_upper_bound = self.function_formula.subs(self.X, self.upper_bound)
-        function_value_at_lower_bound = self.function_formula.subs(self.X, self.lower_bound)
+        function_value_at_upper_bound = self.function_formula.evalf(subs={self.X: self.upper_bound})
+        function_value_at_lower_bound = self.function_formula.evalf(subs={self.X: self.lower_bound})
 
         print(function_value_at_lower_bound)
         print(function_value_at_upper_bound)
@@ -35,27 +35,29 @@ class FalsePosition:
         i = 0
         while True:
 
-            xr_new = ((self.lower_bound * float(self.function_formula.subs(self.X, self.upper_bound))) -
-                      (self.upper_bound * float(self.function_formula.subs(self.X, self.lower_bound)))) / (
-                    float(self.function_formula.subs(self.X, self.upper_bound)) -
-                    float(self.function_formula.subs(self.X, self.lower_bound)))
+            xr_new = ((self.lower_bound * float(self.function_formula.evalf(subs={self.X: self.upper_bound}))) -
+                      (self.upper_bound * float(self.function_formula.evalf(subs={self.X: self.lower_bound})))) / (
+                    float(self.function_formula.evalf(subs={self.X: self.upper_bound})) -
+                    float(self.function_formula.evalf(subs={self.X: self.lower_bound})))
 
-            function_value_at_xr_1_new = float(self.function_formula.subs(self.X, float(xr_new)))
+            function_value_at_xr_1_new = float(self.function_formula.evalf(subs={self.X: float(xr_new)}))
 
             if i == 0:
 
                 # create the table
-                table = graphlab.SFrame({'Xu': [self.upper_bound], 'Xl': [self.lower_bound], 'Xr': [xr_new],
-                                         'F(Xr)': [function_value_at_xr_1_new], 'relative_error': [None]})
+                table = [['Xu', 'Xl', 'Xr', 'F(Xr)', 'relative_error']]
+                row = [self.upper_bound, self.lower_bound, xr_new, function_value_at_xr_1_new, None]
+                table.append(row)
+
             else:
 
                 eps = (xr_new - xr_1_old) / xr_new
 
                 # add row to the table
-                fxr = float(self.function_formula.subs(self.X, xr_new))
-                row = graphlab.SFrame({'Xu': [self.upper_bound], 'Xl': [self.lower_bound], 'Xr': [xr_new],
-                                       'F(Xr)': [fxr], 'relative_error': [eps]})
-                table = table.append(row)
+                fxr = float(self.function_formula.evalf(subs={self.X: xr_new}))
+                # add new row
+                row = [self.upper_bound, self.lower_bound, xr_new, fxr, math.fabs(eps)]
+                table.append(row)
 
             if function_value_at_xr_1_new < 0:
                 self.lower_bound = xr_new
@@ -71,21 +73,11 @@ class FalsePosition:
                 break
 
         print(table)
-        return xr_new
+        return table, xr_new
 
-    # TODO specify bounders
-    def plot_function(self):
+    def get_x_y(self):
 
-        a = []
-        b = []
+        x = arange(self.upper_bound, self.lower_bound, (self.upper_bound - self.lower_bound)/100)
+        y = self.function_formula.evalf(subs={self.X: x})
+        return x, y
 
-        for x in range(-50, 50, 1):
-            y = self.function_formula.subs(self.X, x)
-            a.append(x)
-            b.append(y)
-
-        fig = plt.figure()
-        axes = fig.add_subplot(111)
-        axes.plot(a, b)
-        axes.grid()
-        plt.show()
