@@ -147,7 +147,7 @@ def solve():
                 call_func = Secant_method.Secant(func, second_guess, first_guess, max_iterations, epsilon)
             elif(method == "Bierge Vieta"):
                 # TODO: how can i get the coefficients of the function (ai)
-                 call_func = Brige_vieta_method.BrigeVeta(parser.poly_coeffs(), first_guess, [1.0, -3.0, 2.0], max_iterations, epsilon)
+                 call_func = Brige_vieta_method.BrigeVeta(func, first_guess, parser.poly_coeffs(), max_iterations, epsilon)
 
             bool1 = call_func.verify_there_is_a_root()
             print(bool(bool1))  #debugging
