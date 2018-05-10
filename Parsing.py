@@ -100,10 +100,10 @@ e               natural number
 
     def is_number(self, s):
         try:
-            float(s)
-            return True
-        except ValueError:
-            return False
+          float(s)
+          return True
+        except :
+          return False
 
     def f(self):
         """
@@ -155,6 +155,17 @@ e               natural number
         res = eval(object_code)
         return res
 
+    def is_const(self):
+        x = Symbol('x')
+        object_code = compile(self.func, '', 'eval')
+        res = eval(object_code)
+        if(self.is_number(res)):
+          return true
+        div_x = res.diff(x)
+        if div_x == 0 :
+            return True
+        return False
+
 #### examples on Parser class
 
 
@@ -168,6 +179,10 @@ p.set_func("7+x**5+x-70*x**2")
 print(p.poly_coeffs())
 
 print(p.f())
+p.set_func("232+x/x")
+print (p.is_const())
+p.set_func("232")
+print (p.is_const())
 """
 #0
 if p.set_func("x**3 + 2 * x**2  - 4 * x + 3"):
