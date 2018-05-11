@@ -21,7 +21,7 @@ class MyClass(object):
             inter = lines[2]
             inter = inter.replace("[","")
             inter = inter.replace("]","")
-            inter = Points.split(" ")
+            inter = inter.split(" ")
             for i in inter:
                 self.interval.append(float(i))
         elif self.method in (3,4,6):
