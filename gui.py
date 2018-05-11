@@ -236,7 +236,7 @@ def solve():
                             app.errorBox("Error arise","Unfortunately, an error arises while computing the root")
                         else:
                             print(root) #debugging
-                            app.setLabel("root","root of f(x) is " + str(root))
+                            app.setLabel("root","root of f(x) = " + str(func) + " is " + str(root))
                             if call_func.is_root():
                                 app.setLabel("convergence","converged")
                                 app.setLabelBg("convergence","green")
