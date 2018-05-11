@@ -34,10 +34,13 @@ class NewtonRaphson:
     #         return true
 
     def compute_root(self):
-
-        fxi = float(self.function_formula.evalf(subs={self.X: self.initial_x}))
-        fxi_div = float(self.function_div(self.initial_x))
-
+        try:
+            fxi = float(self.function_formula.evalf(subs={self.X: self.initial_x}))
+            fxi_div = float(self.function_div(self.initial_x))
+        except ZeroDivisionError:
+            return "r0"
+        except:
+            return "err"
         # create the table
         table = [['i', 'Xi', 'F(Xi)', "F'(Xi)", 'relative_error']]
         row = [0, self.initial_x, fxi, fxi_div, None]
@@ -49,17 +52,31 @@ class NewtonRaphson:
 
             i = i + 1
 
-            if self.function_div(self.initial_x) == 0:
+            #if self.function_div(self.initial_x) == 0:
                 # TODO determine what to do ?
-                print("division by zero")
-
-            iterative_x = self.initial_x - (float(self.function_formula.evalf(subs={self.X: self.initial_x})) /
+                #print("division by zero")
+            try:
+                iterative_x = self.initial_x - (float(self.function_formula.evalf(subs={self.X: self.initial_x})) /
                                             float(self.function_div(self.initial_x)))
-            relative_error = (iterative_x - self.initial_x) / iterative_x
+            except ZeroDivisionError:
+                return "db0"
+            except:
+                return "err"
 
-            fxi = float(self.function_formula.evalf(subs={self.X: self.initial_x}))
-            fxi_div = float(self.function_div(iterative_x))
+            try:
+                relative_error = (iterative_x - self.initial_x) / iterative_x
+            except ZeroDivisionError:
+                return "r0"
+            except:
+                return "err"
 
+            try:
+                fxi = float(self.function_formula.evalf(subs={self.X: self.initial_x}))
+                fxi_div = float(self.function_div(iterative_x))
+            except ZeroDivisionError:
+                return "r0"
+            except:
+                return "err"
             # add Row to the table
             row = [i, iterative_x, fxi, fxi_div, math.fabs(relative_error)]
             table.append(row)
@@ -71,7 +88,6 @@ class NewtonRaphson:
             self.initial_x = iterative_x
 
         final_table = [table]
-        print(final_table)
         return final_table, iterative_x
 
     def get_x_y(self):

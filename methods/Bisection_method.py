@@ -28,7 +28,7 @@ class BracketingMethod:
             return true
 
     def determine_number_of_iterations(self):
-        BracketingMethod.num_of_iteration = math.ceil(((math.log10(self.upper_bound - self.lower_bound)
+        BracketingMethod.num_of_iteration = math.ceil(((math.log10(math.fabs(self.upper_bound - self.lower_bound))
                                                         - math.log10(self.precision)) / math.log10(2)))
         return BracketingMethod.num_of_iteration
 
@@ -44,7 +44,6 @@ class BracketingMethod:
 
         i = 0
         while i < BracketingMethod.num_of_iteration:
-
             xr = (self.upper_bound + self.lower_bound) / 2.0
             function_value_at_xr = self.function_formula.evalf(subs={self.X: xr})
 
@@ -61,6 +60,10 @@ class BracketingMethod:
                 if math.fabs(eps) <= self.precision:
                     break
 
+            if function_value_at_xr < 1e-10 and function_value_at_xr > -1e-10:
+                break
+
+
             if (function_value_at_xr * self.function_formula.evalf(subs={self.X: self.upper_bound})) < 0:
                 self.lower_bound = xr
             else:
@@ -73,7 +76,6 @@ class BracketingMethod:
                 break
 
         final_table = [table]
-        print (final_table)
         return final_table, xr
 
     def get_x_y(self):
