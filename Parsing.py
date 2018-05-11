@@ -95,7 +95,13 @@ e               natural number
                 else:
                     return False
             i += 1
-        return True
+        try:
+            x = Symbol('x')
+            object_code = compile(self.func, '', 'eval')
+            res = eval(object_code)
+            return True
+        except:
+            return False
 
     def is_number(self, s):
         try:
@@ -168,9 +174,20 @@ e               natural number
 #### examples on Parser class
 
 
+p = Parser()
 
+p.set_func("4+sin(5*x)-exp(4/x)+30*x")
+s=p.g()
+print(s)
 
+p.set_func("7+x**5+x-70*x**2")
+print(p.poly_coeffs())
 
+print(p.f())
+p.set_func("232+x/x")
+print (p.is_const())
+p.set_func("232")
+print (p.is_const())
 """
 #0
 if p.set_func("x**3 + 2 * x**2  - 4 * x + 3"):
