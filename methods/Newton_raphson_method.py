@@ -5,8 +5,7 @@ from numpy import arange
 
 class NewtonRaphson:
 
-    num_of_iteration = 0
-
+    root
     # pass a function to me
     def __init__(self, function_formula, initial_x, max_iterations, precision, x=Symbol('x')):
         self.function_formula = function_formula
@@ -35,60 +34,77 @@ class NewtonRaphson:
 
     def compute_root(self):
         try:
-            fxi = float(self.function_formula.evalf(subs={self.X: self.initial_x}))
-            fxi_div = float(self.function_div(self.initial_x))
-        except ZeroDivisionError:
-            return "r0"
-        except:
-            return "err"
-        # create the table
-        table = [['i', 'Xi', 'F(Xi)', "F'(Xi)", 'relative_error']]
-        row = [0, self.initial_x, fxi, fxi_div, None]
-        table.append(row)
-
-        i = 0
-
-        while True:
-
-            i = i + 1
-
-            #if self.function_div(self.initial_x) == 0:
-                # TODO determine what to do ?
-                #print("division by zero")
-            try:
-                iterative_x = self.initial_x - (float(self.function_formula.evalf(subs={self.X: self.initial_x})) /
-                                            float(self.function_div(self.initial_x)))
-            except ZeroDivisionError:
-                return "db0"
-            except:
-                return "err"
-
-            try:
-                relative_error = (iterative_x - self.initial_x) / iterative_x
-            except ZeroDivisionError:
-                return "r0"
-            except:
-                return "err"
-
             try:
                 fxi = float(self.function_formula.evalf(subs={self.X: self.initial_x}))
-                fxi_div = float(self.function_div(iterative_x))
+                fxi_div = float(self.function_div(self.initial_x))
             except ZeroDivisionError:
                 return "r0"
             except:
                 return "err"
-            # add Row to the table
-            row = [i, iterative_x, fxi, fxi_div, math.fabs(relative_error)]
+            # create the table
+            table = [['i', 'Xi', 'F(Xi)', "F'(Xi)", 'relative_error']]
+            row = [0, self.initial_x, fxi, fxi_div, None]
             table.append(row)
 
-            # break when reach max iteration or precision
-            if (math.fabs(relative_error) <= self.precision) | (i >= self.max_iterations):
-                break
+            i = 0
+            # if the initial guess is the root
+            if self.function_formula.evalf(subs={self.X: self.initial_x}) == 0.0:
+                return [table], self.initial_x
 
-            self.initial_x = iterative_x
+            while True:
 
-        final_table = [table]
-        return final_table, iterative_x
+                i = i + 1
+
+                #if self.function_div(self.initial_x) == 0:
+                    # TODO determine what to do ?
+                    #print("division by zero")
+                try:
+                    iterative_x = self.initial_x - (float(self.function_formula.evalf(subs={self.X: self.initial_x})) /
+                                                float(self.function_div(self.initial_x)))
+                except ZeroDivisionError:
+                    return [table], "db0", false
+                except:
+                    return [table], "err", false
+
+                try:
+                    relative_error = (iterative_x - self.initial_x) / iterative_x
+                except ZeroDivisionError:
+                    return [table], "r0", false
+                except:
+                    return [table], "err", false
+
+                try:
+                    fxi = float(self.function_formula.evalf(subs={self.X: self.initial_x}))
+                    fxi_div = float(self.function_div(iterative_x))
+                except ZeroDivisionError:
+                    return [table], "r0", false
+                except:
+                    return [table], "err", false
+                # add Row to the table
+                row = [i, iterative_x, fxi, fxi_div, math.fabs(relative_error)]
+                table.append(row)
+
+                # break when reach max iteration or precision
+                if (math.fabs(relative_error) <= self.precision) | (i >= self.max_iterations):
+                    break
+
+                self.initial_x = iterative_x
+                if iterative_x < 1e-10 and iterative_x > -1e-10:
+                    break
+
+            final_table = [table]
+            NewtonRaphson.root = iterative_x
+            return final_table, iterative_x
+        except:
+            return [[[]]],"err" ,false
+
+
+    # to do call to check if root
+    def is_root(self):
+        if NewtonRaphson.root < 1e-1 and NewtonRaphson.root > -1e-1:
+            return true
+        else:
+            return false
 
     def get_x_y(self):
 
