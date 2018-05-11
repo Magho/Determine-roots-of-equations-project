@@ -28,7 +28,7 @@ class FalsePosition:
             print(function_value_at_lower_bound)
             print(function_value_at_upper_bound)
 
-            if function_value_at_lower_bound * function_value_at_upper_bound > 0:
+            if int(function_value_at_lower_bound) * int(function_value_at_upper_bound) > 0:
                 return false
             else:
                 return true
@@ -55,9 +55,9 @@ class FalsePosition:
                     row = [self.upper_bound, self.lower_bound, xr_new, function_value_at_xr_1_new, None]
                     table.append(row)
 
-                    if self.function_formula.evalf(subs={self.X: self.upper_bound}) == 0.0:
+                    if int(self.function_formula.evalf(subs={self.X: self.upper_bound})) == 0:
                         return [table], self.upper_bound
-                    elif self.function_formula.evalf(subs={self.X: self.lower_bound}) == 0.0:
+                    elif int(self.function_formula.evalf(subs={self.X: self.lower_bound})) == 0:
                         return [table], self.lower_bound
 
                 else:

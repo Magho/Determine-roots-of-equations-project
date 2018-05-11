@@ -34,9 +34,9 @@ class Secant:
             table.append(row)
 
             # if the initial guess is the root
-            if self.function_formula.evalf(subs={self.X: self.initial_xi}) == 0.0:
+            if int(self.function_formula.evalf(subs={self.X: self.initial_xi})) == 0:
                 return [table], self.initial_xi
-            elif self.function_formula.evalf(subs={self.X: self.initial_xi_1}) == 0.0:
+            elif int(self.function_formula.evalf(subs={self.X: self.initial_xi_1})) == 0:
                 return [table], self.initial_xi_1
 
             i = 0

@@ -29,7 +29,7 @@ class FixedPointIteration:
 
             i = 0
             # if the initial guess is the root
-            if self.function_formula.evalf(subs={self.X: self.initial_x}) == 0.0:
+            if int(self.function_formula.evalf(subs={self.X: self.initial_x})) == 0:
                 return [table], self.initial_x
 
             while True:

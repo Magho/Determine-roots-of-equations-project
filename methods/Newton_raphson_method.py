@@ -48,7 +48,7 @@ class NewtonRaphson:
 
             i = 0
             # if the initial guess is the root
-            if self.function_formula.evalf(subs={self.X: self.initial_x}) == 0.0:
+            if int(self.function_formula.evalf(subs={self.X: self.initial_x})) == 0:
                 return [table], self.initial_x
 
             while True:
@@ -94,7 +94,7 @@ class NewtonRaphson:
 
             final_table = [table]
             NewtonRaphson.root = iterative_x
-            return final_table, iterative_x
+            return final_table, iterative_x, true
         except:
             return [[[]]],"err" ,false
 

@@ -21,18 +21,7 @@ class BrigeVeta:
         if precision == 0:
             self.precision = 0.0001
 
-    # def verify_there_is_a_root(self):
-    #     function_value_at_upper_bound = self.function_formula.subs(self.X, self.upper_bound)
-    #     function_value_at_lower_bound = self.function_formula.subs(self.X, self.lower_bound)
-    #
-    #     print(function_value_at_lower_bound)
-    #     print(function_value_at_upper_bound)
-    #
-    #     if function_value_at_lower_bound * function_value_at_upper_bound < 0:
-    #         return true
-
     def compute_root(self):
-        try:
             table = []
             fxi = float(self.function_formula.subs(self.X, self.initial_x))
 
@@ -44,7 +33,7 @@ class BrigeVeta:
             j = 0
 
             # if the initial guess is the root
-            if self.function_formula.evalf(subs={self.X: self.initial_x}) == 0.0:
+            if int(self.function_formula.evalf(subs={self.X: self.initial_x})) == 0:
                 return [table1], self.initial_x
 
             while True:
@@ -110,8 +99,7 @@ class BrigeVeta:
             BrigeVeta.root = iterative_x
 
             return table, iterative_x, true
-        except:
-            return [[[]]], 0.0, false
+
 
     # to do call to check if root
     def is_root(self):

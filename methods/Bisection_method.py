@@ -25,8 +25,10 @@ class BracketingMethod:
         try:
             function_value_at_upper_bound = self.function_formula.evalf(subs={self.X: self.upper_bound})
             function_value_at_lower_bound = self.function_formula.evalf(subs={self.X: self.lower_bound})
+            print(function_value_at_upper_bound)
+            print(function_value_at_lower_bound)
 
-            if function_value_at_lower_bound * function_value_at_upper_bound > 0:
+            if int(function_value_at_lower_bound) * int(function_value_at_upper_bound) > 0:
                 return false
             else:
                 return true
@@ -50,9 +52,9 @@ class BracketingMethod:
             table.append(row)
 
             # if the initial guess is the root
-            if self.function_formula.evalf(subs={self.X: self.upper_bound}) == 0.0:
+            if int(self.function_formula.evalf(subs={self.X: self.upper_bound})) == 0:
                 return [table], self.upper_bound
-            elif self.function_formula.evalf(subs={self.X: self.lower_bound}) == 0.0:
+            elif int(self.function_formula.evalf(subs={self.X: self.lower_bound})) == 0.0:
                 return [table], self.lower_bound
 
             i = 0
