@@ -154,6 +154,7 @@ def checkParameters(method, params):
             app.errorBox("Invalid Parameters", "Epsilon can't be negative!")
             return False
         return True
+
 def solve():
     method = app.getOptionBox("Method")
     if(method == None):
@@ -199,18 +200,26 @@ def solve():
                     elif(method == "Bierge Vieta"):
                         call_func = Brige_vieta_method.BrigeVeta(func, first_guess, parser.poly_coeffs(), max_iterations, epsilon)
                     if is_root_exist:
-                        # TODO: check 3rd returned element if true continue else show error box
-                        data, root = call_func.compute_root()
-                        print(root) #debugging
-                        app.setLabel("root","root of f(x) = " + str(root))
-                        #TODO: get converge or diverge from is_root method
-                        #app.setLabel("convergence",)
-                        current_mode = app.getTabbedFrameSelectedTab("TabbedFrame")
-                        showPlot(current_mode,call_func.get_x_y())
-                        if(current_mode == "Fast Mode"):
-                            show_fast_mode_table()
-                        elif(current_mode == "Single Step Mode"):
-                            show_single_step_mode_table()
+                        data, root, done = call_func.compute_root()
+                        if not done:
+                            app.errorBox("Error arise","Unfortunately, an error arises while computing the root")
+                        else:
+                            print(root) #debugging
+                            app.setLabel("root","root of f(x) is " + str(root))
+                            if call_func.is_root():
+                                app.setLabel("convergence","converged")
+                                app.setLabelBg("convergence","green")
+                                app.setLabelFg("convergence","white")
+                            else :
+                                app.setLabel("convergence", "diverged")
+                                app.setLabelBg("convergence", "red")
+                                app.setLabelFg("convergence", "white")
+                            current_mode = app.getTabbedFrameSelectedTab("TabbedFrame")
+                            showPlot(current_mode,call_func.get_x_y())
+                            if(current_mode == "Fast Mode"):
+                                show_fast_mode_table()
+                            elif(current_mode == "Single Step Mode"):
+                                show_single_step_mode_table()
 
             else:
                 app.errorBox("Invalid Function","f(x)=" + parser.func + " is an invalid function")
@@ -290,9 +299,9 @@ app.setEntry("Epsilon", 0.0001)
 app.addButton("Solve",solve)
 styleButton("Solve")
 app.stopLabelFrame()
-app.addLabel("convergence","converge or diverge = ?",1,0)
+app.addLabel("convergence","converge or diverge ?",1,0)
 app.setLabelBg("convergence","light blue")
-app.addLabel("root","root of f(x) = ?",1,1)
+app.addLabel("root","root of f(x) is ?",1,1)
 app.setLabelBg("root","light blue")
 
 # Output Frame
