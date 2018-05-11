@@ -14,8 +14,8 @@ class MyClass(object):
         self.method = int(lines[0])
         self.eqn = lines[1]
         self.interval = lines[2]
-        self.tolerance = lines[3]
-        self.maxIteration = lines[4]
+        self.tolerance = float(lines[3])
+        self.maxIteration = int(lines[4])
 
         
         return self.method,self.eqn,self.interval,self.tolerance,self.maxIteration
