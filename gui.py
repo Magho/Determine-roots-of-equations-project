@@ -1,6 +1,8 @@
 import copy
 import time
 from numpy import arange,pi
+
+import FileReader
 from methods import Bisection_method, False_position_method, Secant_method, Fixed_point_iteration_method, \
     Newton_raphson_method, Brige_vieta_method
 from appJar import gui
@@ -110,8 +112,8 @@ def showAllRoots():
 
 def showLabels(plot_label, axes):
     axes.legend(['The curve'])
-    axes.set_xlabel("X Axes")
-    axes.set_ylabel("Y Axes")
+    axes.set_xlabel("x")
+    axes.set_ylabel("f(x)")
     app.refreshPlot(plot_label)
 
 def styleButton(btn):
@@ -122,6 +124,35 @@ def styleButton(btn):
 
 # TODO: read the file then fill the entries
 def readFile():
+    filePath = app.getEntry("file")
+    reader = FileReader.MyClass(filePath)
+    method, eqn, interval, tolerance, maxIteration, validMethod = reader.getResult()
+    if not validMethod:
+        app.errorBox("Invalid Method","The file contains an invalid method")
+    else:
+        print(interval)
+        if method == 1:
+            app.setOptionBox("Method",1)
+        if method == 2:
+            app.setOptionBox("Method",2)
+        if method == 3:
+            app.setOptionBox("Method",4)
+        if method == 4:
+            app.setOptionBox("Method",5)
+        if method == 5:
+            app.setOptionBox("Method",6)
+        if method == 6:
+            app.setOptionBox("Method",8)
+        if method == 7:
+            app.setOptionBox("Method",10)
+        app.setEntry("f(x)=",eqn)
+        app.setEntry("Max Iterations",maxIteration)
+        app.setEntry("Epsilon",tolerance)
+        if len(interval) == 1:
+            app.setEntry("First Initial Guess",interval[0])
+        elif len(interval) == 2:
+            app.setEntry("First Initial Guess", interval[0])
+            app.setEntry("Second Initial Guess", interval[1])
     print("read File")
 
 
@@ -260,21 +291,12 @@ app.setFont(family="inherit")
 #app.setStretch("both")
 app.setSticky("nesw")
 app.setStretch("")
-"""
-tools = ["ABOUT", "REFRESH", "OPEN", "CLOSE", "SAVE",
-        "NEW", "SETTINGS", "PRINT", "SEARCH", "UNDO",
-        "REDO", "PREFERENCES", "HOME", "HELP", "CALENDAR",
-        "WEB", "OFF"]
-
-app.addToolbar(tools, readFile, findIcon=True)
-app.setToolbarPinned(True)
-"""
 # Function Frame
 app.startLabelFrame("Function",0,0)
 app.setPadding([10,5])
 app.addLabelEntry("f(x)=")
 app.addLabel("orLabel","Or")
-app.addFileEntry("fileEntry")
+app.addFileEntry("file")
 app.addButton("Load",readFile)
 styleButton("Load")
 app.stopLabelFrame()
