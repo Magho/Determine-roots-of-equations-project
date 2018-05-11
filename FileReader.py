@@ -34,8 +34,7 @@ class MyClass(object):
             self.validMethod = True
         else:
             self.validMethod = False
-            
-        self.interval = lines[2]
+
         self.tolerance = float(lines[3])
         self.maxIteration = int(lines[4])
 
