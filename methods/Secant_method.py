@@ -34,10 +34,12 @@ class Secant:
             table.append(row)
 
             # if the initial guess is the root
-            if int(self.function_formula.evalf(subs={self.X: self.initial_xi})) == 0:
+            if self.function_formula.evalf(subs={self.X: self.initial_xi}) < 1e-10 \
+                    and self.function_formula.evalf(subs={self.X: self.initial_xi}) > -1e-10:
                 Secant.root = self.initial_x
                 return [table], self.initial_xi, true
-            elif int(self.function_formula.evalf(subs={self.X: self.initial_xi_1})) == 0:
+            elif self.function_formula.evalf(subs={self.X: self.initial_xi_1}) < 1e-10 \
+                    and self.function_formula.evalf(subs={self.X: self.initial_xi_1}) > -1e-10:
                 Secant.root = self.initial_xi_1
                 return [table], self.initial_xi_1, true
 

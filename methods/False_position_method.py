@@ -54,12 +54,14 @@ class FalsePosition:
                     table = [['Xu', 'Xl', 'Xr', 'F(Xr)', 'relative_error']]
                     row = [self.upper_bound, self.lower_bound, xr_new, function_value_at_xr_1_new, None]
 
-                    if int(self.function_formula.evalf(subs={self.X: self.upper_bound})) == 0:
+                    if self.function_formula.evalf(subs={self.X: self.upper_bound}) < 1e-10 \
+                    and self.function_formula.evalf(subs={self.X: self.upper_bound}) > -1e-10:
                         FalsePosition.root = self.upper_bound
                         row = [self.upper_bound, self.lower_bound, self.upper_bound, 0.0, None]
                         table.append(row)
                         return [table], self.upper_bound, true
-                    elif int(self.function_formula.evalf(subs={self.X: self.lower_bound})) == 0:
+                    elif self.function_formula.evalf(subs={self.X: self.lower_bound}) < 1e-10 \
+                    and self.function_formula.evalf(subs={self.X: self.lower_bound}) > -1e-10:
                         FalsePosition.root = self.lower_bound
                         row = [self.upper_bound, self.lower_bound, self.lower_bound, 0.0, None]
                         table.append(row)

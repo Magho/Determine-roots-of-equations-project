@@ -48,7 +48,8 @@ class NewtonRaphson:
 
             i = 0
             # if the initial guess is the root
-            if int(self.function_formula.evalf(subs={self.X: self.initial_x})) == 0:
+            if self.function_formula.evalf(subs={self.X: self.initial_x}) < 1e-10 \
+                    and self.function_formula.evalf(subs={self.X: self.initial_x}) > -1e-10:
                 NewtonRaphson.root = self.initial_x
                 return [table], self.initial_x, true
 

@@ -51,12 +51,14 @@ class BracketingMethod:
             row = [self.upper_bound, self.lower_bound, (self.upper_bound + self.lower_bound) / 2.0, fxr, None]
 
             # if the initial guess is the root
-            if int(self.function_formula.evalf(subs={self.X: self.upper_bound})) == 0:
+            if self.function_formula.evalf(subs={self.X: self.upper_bound}) < 1e-10 \
+                    and self.function_formula.evalf(subs={self.X: self.upper_bound}) > -1e-10:
                 row = [self.upper_bound, self.lower_bound, self.upper_bound, 0.0, None]
                 table.append(row)
                 BracketingMethod.root = self.upper_bound
                 return [table], self.upper_bound, true
-            elif int(self.function_formula.evalf(subs={self.X: self.lower_bound})) == 0.0:
+            elif self.function_formula.evalf(subs={self.X: self.lower_bound}) < 1e-10 \
+                    and self.function_formula.evalf(subs={self.X: self.lower_bound}) > -1e-10:
                 row = [self.upper_bound, self.lower_bound, self.lower_bound, 0.0, None]
                 table.append(row)
                 BracketingMethod.root = self.lower_bound
