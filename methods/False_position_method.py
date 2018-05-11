@@ -57,10 +57,10 @@ class FalsePosition:
 
                     if int(self.function_formula.evalf(subs={self.X: self.upper_bound})) == 0:
                         FalsePosition.root = self.upper_bound
-                        return [table], self.upper_bound
+                        return [table], self.upper_bound, true
                     elif int(self.function_formula.evalf(subs={self.X: self.lower_bound})) == 0:
                         FalsePosition.root = self.lower_bound
-                        return [table], self.lower_bound
+                        return [table], self.lower_bound, true
 
                 else:
 

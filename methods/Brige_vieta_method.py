@@ -35,7 +35,7 @@ class BrigeVeta:
             # if the initial guess is the root
             if int(self.function_formula.evalf(subs={self.X: self.initial_x})) == 0:
                 BrigeVeta.root = self.initial_x
-                return [table1], self.initial_x
+                return [table1], self.initial_x, true
 
             while True:
 
