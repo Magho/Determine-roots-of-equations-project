@@ -10,10 +10,10 @@ from sympy import *
 
 def showPlot(current_mode,(x,y)):
     if (current_mode == "Fast Mode"):
-        axes = app.updatePlot("fast_plot",(x,y))
+        axes = app.updatePlot("fast_plot",x,y)
         showLabels("fast_plot",axes)
     elif (current_mode == "Single Step Mode"):
-        axes = app.updatePlot("single_step_plot", (x,y))
+        axes = app.updatePlot("single_step_plot", x,y)
         showLabels("single_step_plot",axes)
 
 fast_tables = []
@@ -36,9 +36,19 @@ last_table_label = ""
 step_count = 1
 single_step_tables = []
 single_step_tables_copy = []
+navigation_buttons_exist = False
 def show_single_step_mode_table():
     single_step_tables_copy = copy.deepcopy(single_step_tables)
     app.openScrollPane("single_step_table_pane")
+    global navigation_buttons_exist
+    if not navigation_buttons_exist:
+        app.addButton("prev", navigate_steps, 0, 0)
+        styleButton("prev")
+        app.setButtonStickey("prev", "left")
+        app.addButton("next", navigate_steps, 0, 1)
+        styleButton("next")
+        app.setButtonStickey("next", "right")
+        navigation_buttons_exist = True
     for table_label in single_step_tables_copy:
         app.removeTable(table_label)
         single_step_tables.remove(table_label)
@@ -46,7 +56,7 @@ def show_single_step_mode_table():
         label = "single_step_table_" + str(len(single_step_tables))
         single_step_tables.append(label)
         app.addTable(label,table_data,border="sunken",colspan=2)
-        app.setTableWidth(label,600)
+        app.setTableWidth(label, 700)
     global last_table_label
     last_table_label = "single_step_table_" + str(len(single_step_tables)-1)
     app.deleteAllTableRows(last_table_label)
@@ -91,8 +101,7 @@ def styleButton(btn):
     app.setButtonCursor(btn,"hand2")
     app.setButtonRelief(btn,"groove")
 
-
-# read the file then fill the entries
+# TODO: read the file then fill the entries
 def readFile():
     print("read File")
 
@@ -159,7 +168,7 @@ def solve():
             app.setLabel("root","root of f(x) = " + str(root))
             app.setLabel("iterations","number of iterations = " + str(num_of_iterations))
             current_mode = app.getTabbedFrameSelectedTab("TabbedFrame")
-            #showPlot(current_mode,call_func.get_x_y())
+            showPlot(current_mode,call_func.get_x_y())
             if(current_mode == "Fast Mode"):
                 show_fast_mode_table()
             elif(current_mode == "Single Step Mode"):
@@ -254,12 +263,6 @@ app.startTab("Single Step Mode")
 axes = app.addPlot("single_step_plot", *get_plot_xy(), row=0, column=0, width=4, height=4)
 showLabels("single_step_plot", axes)
 app.startScrollPane("single_step_table_pane",0,1)
-app.addButton("prev",navigate_steps,0,0)
-styleButton("prev")
-app.setButtonStickey("prev","left")
-app.addButton("next",navigate_steps,0,1)
-styleButton("next")
-app.setButtonStickey("next","right")
 app.stopScrollPane()
 app.stopTab()
 app.stopTabbedFrame()
