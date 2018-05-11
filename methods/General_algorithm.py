@@ -55,7 +55,6 @@ class General_Algorithm:
                     num_of_bisec_roots += 1
                     bisec_roots.append(single_root)
 
-
         num_of_newton_roots = 0
         newton_num_of_non_ordinary_roots = 0
         for i in range(100):
@@ -63,7 +62,7 @@ class General_Algorithm:
             if (isinstance(self.function_formula, int)
             or isinstance(self.function_formula, float)
             or isinstance(self.function_formula, numbers.One)):
-                return
+                break
             randomInitialPoint = randint(-100000, 100000)
             newtonR = Newton_raphson_method.NewtonRaphson(self.function_formula, randomInitialPoint, 75, 0.000000000001);
             root = newtonR.compute_root()[1]
@@ -94,9 +93,9 @@ class General_Algorithm:
                         newton_roots.append(single_nroot)
             else:
                 break
-
             if newton_num_of_non_ordinary_roots > 9:
                 break
+
 
         if len(newton_roots) > len(bisec_roots) + 9:
             for r in newton_roots:
@@ -119,6 +118,6 @@ class General_Algorithm:
 
 # ------------------------------------------------ test 1 -------------------------------------------------
 x = Symbol('x')
-function_formula = (x-1)*(x-5) * (x-3)**3 * x
+function_formula = x
 ga = General_Algorithm()
 print(ga.findAllRoots(function_formula))
