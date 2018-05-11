@@ -30,6 +30,7 @@ class FixedPointIteration:
             i = 0
             # if the initial guess is the root
             if int(self.function_formula.evalf(subs={self.X: self.initial_x})) == 0:
+                FixedPointIteration.root = self.initial_x
                 return [table], self.initial_x
 
             while True:
@@ -67,9 +68,13 @@ class FixedPointIteration:
 
     # to do call to check if root
     def is_root(self):
-        if FixedPointIteration.root < 1e-1 and FixedPointIteration.root > -1e-1:
-            return true
-        else:
+        try:
+            if self.function_formula.evalf(subs={self.X: FixedPointIteration.root}) < 1e-1 \
+                    and self.function_formula.evalf(subs={self.X: FixedPointIteration.root}) > -1e-1:
+                return true
+            else:
+                return false
+        except:
             return false
 
     def get_x_y(self):

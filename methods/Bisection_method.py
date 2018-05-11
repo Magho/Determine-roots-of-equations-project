@@ -53,8 +53,10 @@ class BracketingMethod:
 
             # if the initial guess is the root
             if int(self.function_formula.evalf(subs={self.X: self.upper_bound})) == 0:
+                BracketingMethod.root = self.upper_bound
                 return [table], self.upper_bound
             elif int(self.function_formula.evalf(subs={self.X: self.lower_bound})) == 0.0:
+                BracketingMethod.root = self.lower_bound
                 return [table], self.lower_bound
 
             i = 0
@@ -99,12 +101,15 @@ class BracketingMethod:
         except:
             return [[[]]], 0.0, false
 
-
     # to do call to check if root
     def is_root(self):
-        if BracketingMethod.root < 1e-1 and BracketingMethod.root > -1e-1:
-            return true
-        else:
+        try:
+            if self.function_formula.evalf(subs={self.X: BracketingMethod.root}) < 1e-1 \
+                    and self.function_formula.evalf(subs={self.X: BracketingMethod.root}) > -1e-1:
+                return true
+            else:
+                return false
+        except:
             return false
 
     def get_x_y(self):

@@ -56,8 +56,10 @@ class FalsePosition:
                     table.append(row)
 
                     if int(self.function_formula.evalf(subs={self.X: self.upper_bound})) == 0:
+                        FalsePosition.root = self.upper_bound
                         return [table], self.upper_bound
                     elif int(self.function_formula.evalf(subs={self.X: self.lower_bound})) == 0:
+                        FalsePosition.root = self.lower_bound
                         return [table], self.lower_bound
 
                 else:
@@ -100,9 +102,13 @@ class FalsePosition:
 
     # to do call to check if root
     def is_root(self):
-        if FalsePosition.root < 1e-1 and FalsePosition.root > -1e-1:
-            return true
-        else:
+        try:
+            if self.function_formula.evalf(subs={self.X: FalsePosition.root}) < 1e-1 \
+                    and self.function_formula.evalf(subs={self.X: FalsePosition.root}) > -1e-1:
+                return true
+            else:
+                return false
+        except:
             return false
 
     def get_x_y(self):

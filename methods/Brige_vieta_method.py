@@ -34,6 +34,7 @@ class BrigeVeta:
 
             # if the initial guess is the root
             if int(self.function_formula.evalf(subs={self.X: self.initial_x})) == 0:
+                BrigeVeta.root = self.initial_x
                 return [table1], self.initial_x
 
             while True:
@@ -103,9 +104,13 @@ class BrigeVeta:
 
     # to do call to check if root
     def is_root(self):
-        if BrigeVeta.root < 1e-1 and BrigeVeta.root > -1e-1:
-            return true
-        else:
+        try:
+            if self.function_formula.evalf(subs={self.X: BrigeVeta.root}) < 1e-1 \
+                    and self.function_formula.evalf(subs={self.X: BrigeVeta.root}) > -1e-1:
+                return true
+            else:
+                return false
+        except:
             return false
 
     def get_x_y(self):

@@ -35,8 +35,10 @@ class Secant:
 
             # if the initial guess is the root
             if int(self.function_formula.evalf(subs={self.X: self.initial_xi})) == 0:
+                Secant.root = self.initial_x
                 return [table], self.initial_xi
             elif int(self.function_formula.evalf(subs={self.X: self.initial_xi_1})) == 0:
+                Secant.root = self.initial_xi_1
                 return [table], self.initial_xi_1
 
             i = 0
@@ -84,9 +86,13 @@ class Secant:
 
     # to do call to check if root
     def is_root(self):
-        if Secant.root < 1e-1 and Secant.root > -1e-1:
-            return true
-        else:
+        try:
+            if self.function_formula.evalf(subs={self.X: Secant.root}) < 1e-1 \
+                    and self.function_formula.evalf(subs={self.X: Secant.root}) > -1e-1:
+                return true
+            else:
+                return false
+        except:
             return false
 
     def get_x_y(self):
