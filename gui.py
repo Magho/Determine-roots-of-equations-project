@@ -7,6 +7,8 @@ from appJar import gui
 from Parsing import Parser
 from sympy import *
 
+from methods.General_algorithm import General_Algorithm
+
 
 def showPlot(current_mode,(x,y)):
     if (current_mode == "Fast Mode"):
@@ -89,6 +91,23 @@ def get_plot_xy():
     y = x
     return x,y
 
+
+allRootsTable = False
+def showAllRoots():
+    global allRootsTable
+    app.openSubWindow("All Roots")
+    if not allRootsTable:
+        app.addTable("allRootsTable",data[0])
+    else:
+        app.removeTable("allRootsTable")
+        app.addTable("allRootsTable",data[0])
+    allRootsTable = True
+    app.stopSubWindow()
+    app.showSubWindow("All Roots")
+
+
+
+
 def showLabels(plot_label, axes):
     axes.legend(['The curve'])
     axes.set_xlabel("X Axes")
@@ -107,34 +126,38 @@ def readFile():
 
 
 def checkParameters(method, params):
-    error_message = "you must specify the following:\n"
-    error = False
-    for key in list(params.keys()):
-        if (key == "fileEntry"):
-            continue
-        elif (key == "Second Initial Guess" and (method=="Fixed Point" or method == "Newton-Raphson" or method =="Bierge Vieta")):
-            continue
-        elif (key == "f(x)=" and params[key] == ""):
-            error = True
-            error_message += "Function\n"
-        elif (params[key] == None):
-            error = True
-            error_message += key + "\n"
+    if method == "All Roots":
+        pass
+    else:
+        error_message = "you must specify the following:\n"
+        error = False
+        for key in list(params.keys()):
+            if (key == "fileEntry"):
+                continue
+            elif (key == "Second Initial Guess" and (method=="Fixed Point" or method == "Newton-Raphson" or method =="Bierge Vieta")):
+                continue
+            elif (key == "f(x)=" and params[key] == ""):
+                error = True
+                error_message += "Function\n"
+            elif (params[key] == None):
+                error = True
+                error_message += key + "\n"
 
-    if (error):
-        app.errorBox("Empty Entries", error_message)
+        if (error):
+            app.errorBox("Empty Entries", error_message)
 
-    if (params["Max Iterations"] < 0):
-        app.errorBox("Invalid Parameters", "Max Iterations can't be negative!")
+        if (params["Max Iterations"] < 0):
+            app.errorBox("Invalid Parameters", "Max Iterations can't be negative!")
 
-    if (params["Epsilon"] < 0):
-        app.errorBox("Invalid Parameters", "Epsilon can't be negative!")
+        if (params["Epsilon"] < 0):
+            app.errorBox("Invalid Parameters", "Epsilon can't be negative!")
 
 def solve():
     method = app.getOptionBox("Method")
     if(method == None):
         app.errorBox("Invalid Method","You must specify the method")
     else :
+        global data
         params = app.getAllEntries()
         print(params)  # debugging
         checkParameters(method, params)
@@ -146,33 +169,38 @@ def solve():
             max_iterations = params["Max Iterations"]
             epsilon = params["Epsilon"]
             print(func) #debugging
-            if(method == "Bisection"):
-                call_func = Bisection_method.BracketingMethod(func, second_guess, first_guess, max_iterations, epsilon)
-            elif (method == "False Position"):
-                call_func = False_position_method.FalsePosition(func, second_guess, first_guess, max_iterations, epsilon)
-            elif (method == "Fixed Point"):
-                call_func = Fixed_point_iteration_method.FixedPointIteration(func, first_guess, max_iterations, epsilon)
-            elif (method == "Newton-Raphson"):
-                call_func = Newton_raphson_method.NewtonRaphson(func, first_guess, max_iterations, epsilon)
-            elif(method == "Secant"):
-                call_func = Secant_method.Secant(func, second_guess, first_guess, max_iterations, epsilon)
-            elif(method == "Bierge Vieta"):
-                call_func = Brige_vieta_method.BrigeVeta(func, first_guess, parser.poly_coeffs(), max_iterations, epsilon)
-            bool1 = call_func.verify_there_is_a_root()
-            print(bool(bool1))  #debugging
-            num_of_iterations = call_func.determine_number_of_iterations()
-            print(num_of_iterations)    #debugging
-            global data
-            data, root = call_func.compute_root()
-            print(root) #debugging
-            app.setLabel("root","root of f(x) = " + str(root))
-            app.setLabel("iterations","number of iterations = " + str(num_of_iterations))
-            current_mode = app.getTabbedFrameSelectedTab("TabbedFrame")
-            showPlot(current_mode,call_func.get_x_y())
-            if(current_mode == "Fast Mode"):
-                show_fast_mode_table()
-            elif(current_mode == "Single Step Mode"):
-                show_single_step_mode_table()
+            if(method == "All Roots"):
+                ga = General_Algorithm()
+                data = []
+                data.append(ga.findAllRoots(func))
+                showAllRoots()
+            else:
+                if(method == "Bisection"):
+                    call_func = Bisection_method.BracketingMethod(func, second_guess, first_guess, max_iterations, epsilon)
+                elif (method == "False Position"):
+                    call_func = False_position_method.FalsePosition(func, second_guess, first_guess, max_iterations, epsilon)
+                elif (method == "Fixed Point"):
+                    call_func = Fixed_point_iteration_method.FixedPointIteration(func, first_guess, max_iterations, epsilon)
+                elif (method == "Newton-Raphson"):
+                    call_func = Newton_raphson_method.NewtonRaphson(func, first_guess, max_iterations, epsilon)
+                elif(method == "Secant"):
+                    call_func = Secant_method.Secant(func, second_guess, first_guess, max_iterations, epsilon)
+                elif(method == "Bierge Vieta"):
+                    call_func = Brige_vieta_method.BrigeVeta(func, first_guess, parser.poly_coeffs(), max_iterations, epsilon)
+                bool1 = call_func.verify_there_is_a_root()
+                print(bool(bool1))  #debugging
+                num_of_iterations = call_func.determine_number_of_iterations()
+                print(num_of_iterations)    #debugging
+                data, root = call_func.compute_root()
+                print(root) #debugging
+                app.setLabel("root","root of f(x) = " + str(root))
+                app.setLabel("iterations","number of iterations = " + str(num_of_iterations))
+                current_mode = app.getTabbedFrameSelectedTab("TabbedFrame")
+                showPlot(current_mode,call_func.get_x_y())
+                if(current_mode == "Fast Mode"):
+                    show_fast_mode_table()
+                elif(current_mode == "Single Step Mode"):
+                    show_single_step_mode_table()
 
         else:
             app.errorBox("Invalid Function","f(x)=" + parser.func + " is an invalid function")
@@ -213,7 +241,15 @@ app.setFont(family="inherit")
 #app.setStretch("both")
 app.setSticky("nesw")
 app.setStretch("")
+"""
+tools = ["ABOUT", "REFRESH", "OPEN", "CLOSE", "SAVE",
+        "NEW", "SETTINGS", "PRINT", "SEARCH", "UNDO",
+        "REDO", "PREFERENCES", "HOME", "HELP", "CALENDAR",
+        "WEB", "OFF"]
 
+app.addToolbar(tools, readFile, findIcon=True)
+app.setToolbarPinned(True)
+"""
 # Function Frame
 app.startLabelFrame("Function",0,0)
 app.setPadding([10,5])
@@ -229,7 +265,8 @@ app.startLabelFrame("Method",0,1,colspan=2)
 app.setPadding([10,5])
 app.addLabelOptionBox("Method", ["- Bracketing Methods -", "Bisection", "False Position",
                         "- Open Methods -", "Fixed Point", "Newton-Raphson",
-                        "Secant", "- Polynomials -", "Bierge Vieta"],0)
+                        "Secant", "- Polynomials -", "Bierge Vieta", "- General -" , "All Roots"],0)
+app.setOptionBoxChangeFunctoin("Method",updateInitialGuesses)
 app.addLabelNumericEntry("First Initial Guess",1,0)
 firstGuessLabel = app.getLabelWidget("First Initial Guess")
 firstGuessEntry = app.getEntryWidget("First Initial Guess")
@@ -267,5 +304,9 @@ app.stopScrollPane()
 app.stopTab()
 app.stopTabbedFrame()
 #app.thread(updateInitialGuesses)
+
+
+app.startSubWindow("All Roots", modal=True)
+app.stopSubWindow()
 
 app.go()
