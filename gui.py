@@ -209,48 +209,51 @@ def solve():
                     data.append(ga.findAllRoots(func))
                     showAllRoots()
                 else:
-                    is_root_exist = True
-                    if(method == "Bisection"):
-                        call_func = Bisection_method.BracketingMethod(func, second_guess, first_guess, max_iterations, epsilon)
-                        is_root_exist = call_func.verify_there_is_a_root()
-                        print(is_root_exist)  # debugging
-                        if not is_root_exist:
-                            app.errorBox("Root Does not exist","Ther is no root in this interval")
-                    elif (method == "False Position"):
-                        call_func = False_position_method.FalsePosition(func, second_guess, first_guess, max_iterations, epsilon)
-                        is_root_exist = call_func.verify_there_is_a_root()
-                        print(is_root_exist)  # debugging
-                        if not is_root_exist:
-                            app.errorBox("Root Does not exist","Ther is no root in these interval")
-                    elif (method == "Fixed Point"):
-                        call_func = Fixed_point_iteration_method.FixedPointIteration(func, first_guess, max_iterations, epsilon)
-                    elif (method == "Newton-Raphson"):
-                        call_func = Newton_raphson_method.NewtonRaphson(func, first_guess, max_iterations, epsilon)
-                    elif(method == "Secant"):
-                        call_func = Secant_method.Secant(func, second_guess, first_guess, max_iterations, epsilon)
-                    elif(method == "Bierge Vieta"):
-                        call_func = Brige_vieta_method.BrigeVeta(func, first_guess, parser.poly_coeffs(), max_iterations, epsilon)
-                    if is_root_exist:
-                        data, root, done = call_func.compute_root()
-                        if not done:
-                            app.errorBox("Error arise","Unfortunately, an error arises while computing the root")
-                        else:
-                            print(root) #debugging
-                            app.setLabel("root","root of f(x) = " + str(func) + " is " + str(root))
-                            if call_func.is_root():
-                                app.setLabel("convergence","converged")
-                                app.setLabelBg("convergence","green")
-                                app.setLabelFg("convergence","white")
-                            else :
-                                app.setLabel("convergence", "diverged")
-                                app.setLabelBg("convergence", "red")
-                                app.setLabelFg("convergence", "white")
-                            current_mode = app.getTabbedFrameSelectedTab("TabbedFrame")
-                            showPlot(current_mode,call_func.get_x_y())
-                            if(current_mode == "Fast Mode"):
-                                show_fast_mode_table()
-                            elif(current_mode == "Single Step Mode"):
-                                show_single_step_mode_table()
+                    try:
+                        is_root_exist = True
+                        if(method == "Bisection"):
+                            call_func = Bisection_method.BracketingMethod(func, second_guess, first_guess, max_iterations, epsilon)
+                            is_root_exist = call_func.verify_there_is_a_root()
+                            print(is_root_exist)  # debugging
+                            if not is_root_exist:
+                                app.errorBox("Root Does not exist","Ther is no root in this interval")
+                        elif (method == "False Position"):
+                            call_func = False_position_method.FalsePosition(func, second_guess, first_guess, max_iterations, epsilon)
+                            is_root_exist = call_func.verify_there_is_a_root()
+                            print(is_root_exist)  # debugging
+                            if not is_root_exist:
+                                app.errorBox("Root Does not exist","Ther is no root in these interval")
+                        elif (method == "Fixed Point"):
+                            call_func = Fixed_point_iteration_method.FixedPointIteration(func, first_guess, max_iterations, epsilon)
+                        elif (method == "Newton-Raphson"):
+                            call_func = Newton_raphson_method.NewtonRaphson(func, first_guess, max_iterations, epsilon)
+                        elif(method == "Secant"):
+                            call_func = Secant_method.Secant(func, second_guess, first_guess, max_iterations, epsilon)
+                        elif(method == "Bierge Vieta"):
+                            call_func = Brige_vieta_method.BrigeVeta(func, first_guess, parser.poly_coeffs(), max_iterations, epsilon)
+                        if is_root_exist:
+                            data, root, done = call_func.compute_root()
+                            if not done:
+                                app.errorBox("Error arise","Unfortunately, an error arises while computing the root")
+                            else:
+                                print(root) #debugging
+                                app.setLabel("root","root of f(x) = " + str(func) + " is " + str(root))
+                                if call_func.is_root():
+                                    app.setLabel("convergence","converged")
+                                    app.setLabelBg("convergence","green")
+                                    app.setLabelFg("convergence","white")
+                                else :
+                                    app.setLabel("convergence", "diverged")
+                                    app.setLabelBg("convergence", "red")
+                                    app.setLabelFg("convergence", "white")
+                                current_mode = app.getTabbedFrameSelectedTab("TabbedFrame")
+                                showPlot(current_mode,call_func.get_x_y())
+                                if(current_mode == "Fast Mode"):
+                                    show_fast_mode_table()
+                                elif(current_mode == "Single Step Mode"):
+                                    show_single_step_mode_table()
+                    except PolynomialError:
+                        app.errorBox("Polynomial Error","multivariate polynomials are not supported")
 
             else:
                 app.errorBox("Invalid Function","f(x)=" + parser.func + " is an invalid function")
