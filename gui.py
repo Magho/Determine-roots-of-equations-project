@@ -127,7 +127,7 @@ def readFile():
 
 def checkParameters(method, params):
     if method == "All Roots":
-        pass
+        return True
     else:
         error_message = "you must specify the following:\n"
         error = False
@@ -145,13 +145,15 @@ def checkParameters(method, params):
 
         if (error):
             app.errorBox("Empty Entries", error_message)
+            return False
 
         if (params["Max Iterations"] < 0):
             app.errorBox("Invalid Parameters", "Max Iterations can't be negative!")
-
+            return False
         if (params["Epsilon"] < 0):
             app.errorBox("Invalid Parameters", "Epsilon can't be negative!")
-
+            return False
+        return True
 def solve():
     method = app.getOptionBox("Method")
     if(method == None):
@@ -160,50 +162,58 @@ def solve():
         global data
         params = app.getAllEntries()
         print(params)  # debugging
-        checkParameters(method, params)
-        parser = Parser()
-        if(parser.set_func(params["f(x)="])):
-            func = parser.f()
-            first_guess = params["First Initial Guess"]
-            second_guess = params["Second Initial Guess"]
-            max_iterations = params["Max Iterations"]
-            epsilon = params["Epsilon"]
-            print(func) #debugging
-            if(method == "All Roots"):
-                ga = General_Algorithm()
-                data = []
-                data.append(ga.findAllRoots(func))
-                showAllRoots()
-            else:
-                if(method == "Bisection"):
-                    call_func = Bisection_method.BracketingMethod(func, second_guess, first_guess, max_iterations, epsilon)
-                elif (method == "False Position"):
-                    call_func = False_position_method.FalsePosition(func, second_guess, first_guess, max_iterations, epsilon)
-                elif (method == "Fixed Point"):
-                    call_func = Fixed_point_iteration_method.FixedPointIteration(func, first_guess, max_iterations, epsilon)
-                elif (method == "Newton-Raphson"):
-                    call_func = Newton_raphson_method.NewtonRaphson(func, first_guess, max_iterations, epsilon)
-                elif(method == "Secant"):
-                    call_func = Secant_method.Secant(func, second_guess, first_guess, max_iterations, epsilon)
-                elif(method == "Bierge Vieta"):
-                    call_func = Brige_vieta_method.BrigeVeta(func, first_guess, parser.poly_coeffs(), max_iterations, epsilon)
-                bool1 = call_func.verify_there_is_a_root()
-                print(bool(bool1))  #debugging
-                num_of_iterations = call_func.determine_number_of_iterations()
-                print(num_of_iterations)    #debugging
-                data, root = call_func.compute_root()
-                print(root) #debugging
-                app.setLabel("root","root of f(x) = " + str(root))
-                app.setLabel("iterations","number of iterations = " + str(num_of_iterations))
-                current_mode = app.getTabbedFrameSelectedTab("TabbedFrame")
-                showPlot(current_mode,call_func.get_x_y())
-                if(current_mode == "Fast Mode"):
-                    show_fast_mode_table()
-                elif(current_mode == "Single Step Mode"):
-                    show_single_step_mode_table()
+        if checkParameters(method, params):
+            parser = Parser()
+            if(parser.set_func(params["f(x)="])):
+                func = parser.f()
+                first_guess = params["First Initial Guess"]
+                second_guess = params["Second Initial Guess"]
+                max_iterations = params["Max Iterations"]
+                epsilon = params["Epsilon"]
+                print(func) #debugging
+                if(method == "All Roots"):
+                    ga = General_Algorithm()
+                    data = []
+                    data.append(ga.findAllRoots(func))
+                    showAllRoots()
+                else:
+                    is_root_exist = True
+                    if(method == "Bisection"):
+                        call_func = Bisection_method.BracketingMethod(func, second_guess, first_guess, max_iterations, epsilon)
+                        is_root_exist = call_func.verify_there_is_a_root()
+                        print(is_root_exist)  # debugging
+                        if not is_root_exist:
+                            app.errorBox("Root Does not exist","Ther is no root in this interval")
+                    elif (method == "False Position"):
+                        call_func = False_position_method.FalsePosition(func, second_guess, first_guess, max_iterations, epsilon)
+                        is_root_exist = call_func.verify_there_is_a_root()
+                        print(is_root_exist)  # debugging
+                        if not is_root_exist:
+                            app.errorBox("Root Does not exist","Ther is no root in these interval")
+                    elif (method == "Fixed Point"):
+                        call_func = Fixed_point_iteration_method.FixedPointIteration(func, first_guess, max_iterations, epsilon)
+                    elif (method == "Newton-Raphson"):
+                        call_func = Newton_raphson_method.NewtonRaphson(func, first_guess, max_iterations, epsilon)
+                    elif(method == "Secant"):
+                        call_func = Secant_method.Secant(func, second_guess, first_guess, max_iterations, epsilon)
+                    elif(method == "Bierge Vieta"):
+                        call_func = Brige_vieta_method.BrigeVeta(func, first_guess, parser.poly_coeffs(), max_iterations, epsilon)
+                    if is_root_exist:
+                        # TODO: check 3rd returned element if true continue else show error box
+                        data, root = call_func.compute_root()
+                        print(root) #debugging
+                        app.setLabel("root","root of f(x) = " + str(root))
+                        #TODO: get converge or diverge from is_root method
+                        #app.setLabel("convergence",)
+                        current_mode = app.getTabbedFrameSelectedTab("TabbedFrame")
+                        showPlot(current_mode,call_func.get_x_y())
+                        if(current_mode == "Fast Mode"):
+                            show_fast_mode_table()
+                        elif(current_mode == "Single Step Mode"):
+                            show_single_step_mode_table()
 
-        else:
-            app.errorBox("Invalid Function","f(x)=" + parser.func + " is an invalid function")
+            else:
+                app.errorBox("Invalid Function","f(x)=" + parser.func + " is an invalid function")
 
 def updateInitialGuesses():
     while (True):
@@ -280,8 +290,8 @@ app.setEntry("Epsilon", 0.0001)
 app.addButton("Solve",solve)
 styleButton("Solve")
 app.stopLabelFrame()
-app.addLabel("iterations","number of iterations = ?",1,0)
-app.setLabelBg("iterations","light blue")
+app.addLabel("convergence","converge or diverge = ?",1,0)
+app.setLabelBg("convergence","light blue")
 app.addLabel("root","root of f(x) = ?",1,1)
 app.setLabelBg("root","light blue")
 
