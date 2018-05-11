@@ -49,7 +49,6 @@ class BracketingMethod:
             # create the table
             table = [['Xu', 'Xl', 'Xr', 'F(Xr)', 'relative_error']]
             row = [self.upper_bound, self.lower_bound, (self.upper_bound + self.lower_bound) / 2.0, fxr, None]
-            table.append(row)
 
             # if the initial guess is the root
             if int(self.function_formula.evalf(subs={self.X: self.upper_bound})) == 0:
@@ -62,6 +61,8 @@ class BracketingMethod:
                 table.append(row)
                 BracketingMethod.root = self.lower_bound
                 return [table], self.lower_bound, true
+
+            table.append(row)
 
             i = 0
             while i < BracketingMethod.num_of_iteration:

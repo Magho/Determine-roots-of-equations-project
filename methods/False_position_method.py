@@ -53,7 +53,6 @@ class FalsePosition:
                     # create the table
                     table = [['Xu', 'Xl', 'Xr', 'F(Xr)', 'relative_error']]
                     row = [self.upper_bound, self.lower_bound, xr_new, function_value_at_xr_1_new, None]
-                    table.append(row)
 
                     if int(self.function_formula.evalf(subs={self.X: self.upper_bound})) == 0:
                         FalsePosition.root = self.upper_bound
@@ -65,6 +64,8 @@ class FalsePosition:
                         row = [self.upper_bound, self.lower_bound, self.lower_bound, 0.0, None]
                         table.append(row)
                         return [table], self.lower_bound, true
+
+                    table.append(row)
 
                 else:
 
