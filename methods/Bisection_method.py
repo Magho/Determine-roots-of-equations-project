@@ -75,7 +75,13 @@ class BracketingMethod:
 
                     # if the root is zero
                     if xr == 0.0:
-                        eps = None
+                        if  self.function_formula.evalf(subs={self.X: xr}) < 1e-10 \
+                                and  self.function_formula.evalf(subs={self.X: xr}) > -1e-10:
+
+                            return [table], xr, true
+
+                        else:
+                            eps = 1.0
                     else:
                         eps = (xr - xr_old) / xr
 

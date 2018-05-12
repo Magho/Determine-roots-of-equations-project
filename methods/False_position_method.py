@@ -73,7 +73,12 @@ class FalsePosition:
 
                     # if the root is zero
                     if xr_new == 0.0:
-                        eps = None
+                        if self.function_formula.evalf(subs={self.X: xr_new}) < 1e-10 \
+                                and self.function_formula.evalf(subs={self.X: xr_new}) > -1e-10:
+
+                            return [table], xr_new, true
+                        else:
+                            eps = 1.0
                     else:
                         eps = (xr_new - xr_1_old) / xr_new
 

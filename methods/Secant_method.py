@@ -58,7 +58,12 @@ class Secant:
 
                 # if the root is zero
                 if iterative_x == 0.0:
-                    relative_error = None
+                    if self.function_formula.evalf(subs={self.X: iterative_x}) < 1e-10 \
+                            and self.function_formula.evalf(subs={self.X: iterative_x}) > -1e-10:
+
+                        return [table], iterative_x, true
+                    else:
+                        relative_error = 1.0
                 else:
                     relative_error = (iterative_x - self.initial_xi) / iterative_x
 
